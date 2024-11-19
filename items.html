@@ -11,24 +11,29 @@
         <header>
             <h1>Explorateur d'objets LoL</h1>
             <div class="controls">
-                <input type="text" id="searchBar" placeholder="Rechercher un objet..." />
-                <select id="categoryFilter">
+                <input type="text" id="searchBar" placeholder="Rechercher un objet..." aria-label="Rechercher un objet">
+                <select id="categoryFilter" aria-label="Filtrer par catégorie">
                     <option value="">Toutes les catégories</option>
                 </select>
             </div>
         </header>
         <main>
-            <div id="loading" class="loading">Chargement des objets...</div>
+            
             <div id="itemsList" class="items-container">
                 <!-- Les items s'afficheront ici -->
             </div>
         </main>
 
         <!-- Modal pour afficher les détails d'un item -->
-        <div id="itemModal" class="modal hidden">
-            <div class="modal-content">
-                <span class="close-button">&times;</span>
-                <div id="itemDetails"></div>
+        <div id="itemModal" class="modal" aria-hidden="true">
+            <div class="modal-content" role="dialog" aria-labelledby="modalTitle">
+                <button class="close-button" aria-label="Fermer">&times;</button>
+                <div id="itemDetails">
+                    <h2 id="modalTitle"></h2>
+                    <img id="modalImage" src="" alt="">
+                    <p id="modalDescription"></p>
+                    <div id="modalStats"></div>
+                </div>
             </div>
         </div>
     </div>
@@ -37,4 +42,3 @@
     <script src="js/config.js"></script>
     <script src="js/items.js"></script>
 </body>
-</html>

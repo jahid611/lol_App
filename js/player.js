@@ -1,110 +1,120 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const searchForm = document.getElementById('searchForm');
-    const playerInfo = document.getElementById('playerInfo');
-    const matchHistory = document.getElementById('matchHistory');
-    const matchList = document.getElementById('matchList');
-    const loading = document.getElementById('loading');
-    const error = document.getElementById('error');
+    const searchInput = document.getElementById('searchInput');
+    const searchButton = document.getElementById('searchButton');
+    const searchResults = document.getElementById('searchResults');
+    const resultsGrid = document.getElementById('resultsGrid');
+    const modal = document.getElementById('modal');
+    const modalContent = document.getElementById('modalContent');
+    const closeButton = document.querySelector('.close-button');
 
-    searchForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const gameName = document.getElementById('gameName').value;
-        const tagLine = document.getElementById('tagLine').value;
-        const region = document.getElementById('region').value;
+    let champions = [];
+    let items = [];
 
-        try {
-            showLoading();
-            const accountData = await getPlayerPUUID(gameName, tagLine, region);
-            const playerData = await getPlayerInfo(accountData.puuid, region);
-            const ranksData = await getPlayerRanks(playerData.id, region);
-            const matchIds = await getPlayerMatchHistory(accountData.puuid, region);
+    // Simulating API calls to fetch champions and items data
+    const fetchChampions = async () => {
+        const response = await fetch('https://ddragon.leagueoflegends.com/cdn/13.1.1/data/fr_FR/champion.json');
+        const data = await response.json();
+        champions = Object.values(data.data);
+    };
 
-            displayPlayerInfo(playerData, ranksData);
-            await displayMatchHistory(matchIds, accountData.puuid, region);
-            hideLoading();
-        } catch (err) {
-            showError(err.message);
+    const fetchItems = async () => {
+        const response = await fetch('https://ddragon.leagueoflegends.com/cdn/13.1.1/data/fr_FR/item.json');
+        const data = await response.json();
+        items = Object.values(data.data);
+    };
+
+    const init = async () => {
+        await Promise.all([fetchChampions(), fetchItems()]);
+    };
+
+    init();
+
+    const performSearch = () => {
+        const searchTerm = searchInput.value.toLowerCase();
+        const filteredChampions = champions.filter(champion => 
+            champion.name.toLowerCase().includes(searchTerm) || 
+            champion.title.toLowerCase().includes(searchTerm)
+        );
+        const filteredItems = items.filter(item => 
+            item.name.toLowerCase().includes(searchTerm) || 
+            item.description.toLowerCase().includes(searchTerm)
+        );
+
+        displayResults([...filteredChampions, ...filteredItems]);
+    };
+
+    const displayResults = (results) => {
+        resultsGrid.innerHTML = '';
+        results.forEach(result => {
+            const resultElement = document.createElement('div');
+            resultElement.classList.add('result-item');
+            resultElement.innerHTML = `
+                <img src="https://ddragon.leagueoflegends.com/cdn/13.1.1/img/${result.image ? 'champion' : 'item'}/${result.image ? result.image.full : result.image}" alt="${result.name}">
+                <h3>${result.name}</h3>
+            `;
+            resultElement.addEventListener('click', () => showDetails(result));
+            resultsGrid.appendChild(resultElement);
+        });
+        searchResults.classList.remove('hidden');
+    };
+
+    const showDetails = (entity) => {
+        let content = `
+            <h2>${entity.name}</h2>
+            <img src="https://ddragon.leagueoflegends.com/cdn/13.1.1/img/${entity.image ? 'champion' : 'item'}/${entity.image ? entity.image.full : entity.image}" alt="${entity.name}">
+        `;
+
+        if (entity.title) {
+            // It's a champion
+            content += `
+                <p><strong>Titre:</strong> ${entity.title}</p>
+                <p><strong>Rôle:</strong> ${entity.tags.join(', ')}</p>
+                <p><strong>Description:</strong> ${entity.blurb}</p>
+            `;
+        } else {
+            // It's an item
+            content += `
+                <p><strong>Description:</strong> ${entity.description}</p>
+                <p><strong>Prix:</strong> ${entity.gold.total} or</p>
+            `;
+        }
+
+        modalContent.innerHTML = content;
+        modal.classList.remove('hidden');
+    };
+
+    searchButton.addEventListener('click', performSearch);
+    searchInput.addEventListener('keyup', (e) => {
+        if (e.key === 'Enter') {
+            performSearch();
         }
     });
 
-    function displayPlayerInfo(player, ranks) {
-        playerInfo.innerHTML = `
-            <div class="player-header">
-                <img src="${getDdragonUrl(`img/profileicon/${player.profileIconId}.png`)}" alt="Profile Icon" class="profile-icon">
-                <h2>${player.name}</h2>
-                <p>Niveau ${player.summonerLevel}</p>
-            </div>
-            <div class="player-ranks">
-                ${ranks.map(rank => `
-                    <div class="rank-card">
-                        <h3>${formatQueueType(rank.queueType)}</h3>
-                        <p>${rank.tier} ${rank.rank}</p>
-                        <p>${rank.leaguePoints} LP</p>
-                        <p>Victoires: ${rank.wins} / Défaites: ${rank.losses}</p>
-                    </div>
-                `).join('')}
-            </div>
-        `;
-        playerInfo.classList.remove('hidden');
-    }
+    closeButton.addEventListener('click', () => {
+        modal.classList.add('hidden');
+    });
 
-    async function displayMatchHistory(matchIds, puuid, region) {
-        matchList.innerHTML = '';
-        for (const matchId of matchIds.slice(0, 10)) {
-            const matchData = await getMatchDetails(matchId, region);
-            const playerStats = matchData.info.participants.find(p => p.puuid === puuid);
-            
-            const matchElement = document.createElement('div');
-            matchElement.classList.add('match-card');
-            matchElement.innerHTML = `
-                <div class="match-result ${playerStats.win ? 'victory' : 'defeat'}">
-                    ${playerStats.win ? 'Victoire' : 'Défaite'}
-                </div>
-                <div class="match-champion">
-                    <img src="${getDdragonUrl(`img/champion/${playerStats.championName}.png`)}" alt="${playerStats.championName}">
-                    <p>${playerStats.championName}</p>
-                </div>
-                <div class="match-stats">
-                    <p>${playerStats.kills}/${playerStats.deaths}/${playerStats.assists}</p>
-                    <p>CS: ${playerStats.totalMinionsKilled}</p>
-                </div>
-                <div class="match-items">
-                    ${[0, 1, 2, 3, 4, 5, 6].map(slot => 
-                        playerStats[`item${slot}`] ? 
-                        `<img src="${getDdragonUrl(`img/item/${playerStats[`item${slot}`]}.png`)}" alt="Item ${slot}">` :
-                        '<div class="empty-item"></div>'
-                    ).join('')}
-                </div>
-            `;
-            matchList.appendChild(matchElement);
+    window.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            modal.classList.add('hidden');
         }
-        matchHistory.classList.remove('hidden');
+    });
+
+    // Change hero background image every 10 seconds
+    const heroImages = [
+        'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Aatrox_0.jpg',
+        'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Ambessa_0.jpg',
+        'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Yone_0.jpg',
+        'https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Gwen_0.jpg'
+    ];
+
+    const heroSection = document.querySelector('.hero');
+    let currentImageIndex = 0;
+
+    function changeHeroBackground() {
+        currentImageIndex = (currentImageIndex + 1) % heroImages.length;
+        heroSection.style.backgroundImage = `url('${heroImages[currentImageIndex]}')`;
     }
 
-    function formatQueueType(queueType) {
-        const queueTypes = {
-            'RANKED_SOLO_5x5': 'Solo/Duo',
-            'RANKED_FLEX_SR': 'Flex 5v5'
-        };
-        return queueTypes[queueType] || queueType;
-    }
-
-    function showLoading() {
-        loading.classList.remove('hidden');
-        playerInfo.classList.add('hidden');
-        matchHistory.classList.add('hidden');
-        error.classList.add('hidden');
-    }
-
-    function hideLoading() {
-        loading.classList.add('hidden');
-    }
-
-    function showError(message) {
-        error.textContent = message;
-        error.classList.remove('hidden');
-        loading.classList.add('hidden');
-        playerInfo.classList.add('hidden');
-        matchHistory.classList.add('hidden');
-    }
+    setInterval(changeHeroBackground, 10000);
 });

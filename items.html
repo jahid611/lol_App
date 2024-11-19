@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Explorateur d'objets LoL</title>
-    <link rel="stylesheet" href="css/items.css">
+    <link rel="stylesheet" href="/css/items.css">
 </head>
 <body>
     <div class="app-container">
@@ -18,27 +18,25 @@
             </div>
         </header>
         <main>
-            
+            <div id="categoriesList" class="categories-list">
+                <!-- Les catégories s'afficheront ici -->
+            </div>
             <div id="itemsList" class="items-container">
                 <!-- Les items s'afficheront ici -->
             </div>
         </main>
 
-        <!-- Modal pour afficher les détails d'un item -->
         <div id="itemModal" class="modal" aria-hidden="true">
             <div class="modal-content" role="dialog" aria-labelledby="modalTitle">
                 <button class="close-button" aria-label="Fermer">&times;</button>
                 <div id="itemDetails">
-                    <h2 id="modalTitle"></h2>
-                    <img id="modalImage" src="" alt="">
-                    <p id="modalDescription"></p>
-                    <div id="modalStats"></div>
+                    <!-- Le contenu du modal sera inséré ici dynamiquement -->
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Inclusion des fichiers JS -->
-    <script src="js/config.js"></script>
-    <script src="js/items.js"></script>
+    <script src="/js/config.js"></script>
+    <script src="/js/items.js"></script>
 </body>
+</html>

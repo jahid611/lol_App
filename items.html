@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Explorateur d'objets LoL</title>
+    <link rel="stylesheet" href="css/items.css">
+</head>
+<body>
+    <div class="app-container">
+        <header>
+            <h1>Explorateur d'objets LoL</h1>
+            <div class="controls">
+                <input type="text" id="searchBar" placeholder="Rechercher un objet..." />
+                <select id="categoryFilter">
+                    <option value="">Toutes les catégories</option>
+                </select>
+            </div>
+        </header>
+        <main>
+            <div id="loading" class="loading">Chargement des objets...</div>
+            <div id="itemsList" class="items-container">
+                <!-- Les items s'afficheront ici -->
+            </div>
+        </main>
+
+        <!-- Modal pour afficher les détails d'un item -->
+        <div id="itemModal" class="modal hidden">
+            <div class="modal-content">
+                <span class="close-button">&times;</span>
+                <div id="itemDetails"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Inclusion des fichiers JS -->
+    <script src="js/config.js"></script>
+    <script src="js/items.js"></script>
+</body>
+</html>

@@ -1,0 +1,18 @@
+{
+  "name": "lolapp",
+  "version": "1.0.0",
+  "description": "LoL Explorer application",
+  "main": "proxy.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "dependencies": {
+    "cors": "^2.8.5",
+    "express": "^4.21.1",
+    "node-fetch": "^3.3.2"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC"
+}

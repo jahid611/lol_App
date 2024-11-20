@@ -156,7 +156,7 @@ input, select {
 }
 
 .modal-content {
-    position: absolute;
+    position: fixed;
     background-color: rgba(0, 9, 19, 0.95);
     border: 1px solid #785a28;
     color: #fff;

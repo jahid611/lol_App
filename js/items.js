@@ -7,6 +7,9 @@ document.addEventListener('DOMContentLoaded', () => {
     const itemDetails = document.getElementById('itemDetails');
     let allItems = [];
     let activeItem = null;
+    let mouseX = 0;
+    let mouseY = 0;
+    let isHovering = false;
 
     const categories = {
         'AttackDamage': 'Dégâts d\'attaque',
@@ -51,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function fetchItems() {
         try {
-            const response = await fetch('https://ddragon.leagueoflegends.com/cdn/13.10.1/data/fr_FR/item.json');
+            const response = await fetch('https://ddragon.leagueoflegends.com/cdn/14.22.1/data/fr_FR/item.json');
             if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
             const data = await response.json();
 
@@ -129,11 +132,21 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.classList.add('item-card');
         card.innerHTML = `
-            <img src="https://ddragon.leagueoflegends.com/cdn/13.10.1/img/item/${item.image.full}" alt="${item.name}" title="${item.name}" loading="lazy">
+            <img src="https://ddragon.leagueoflegends.com/cdn/14.22.1/img/item/${item.image.full}" alt="${item.name}" title="${item.name}" loading="lazy">
         `;
 
-        card.addEventListener('mouseenter', (e) => showItemDetails(item, e.currentTarget, e));
-        card.addEventListener('mouseleave', hideModal);
+        card.addEventListener('mouseenter', (e) => {
+            isHovering = true;
+            showItemDetails(item, e.currentTarget, e);
+        });
+        card.addEventListener('mouseleave', () => {
+            isHovering = false;
+            setTimeout(() => {
+                if (!isHovering) {
+                    hideModal();
+                }
+            }, 100);
+        });
 
         return card;
     }
@@ -167,7 +180,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="recipe-title">Recette:</div>
                     <div class="recipe-items">
                         ${from.map(componentId => `
-                            <img src="https://ddragon.leagueoflegends.com/cdn/13.10.1/img/item/${allItems.find(i => i.id === componentId)?.image.full}" 
+                            <img src="https://ddragon.leagueoflegends.com/cdn/14.22.1/img/item/${allItems.find(i => i.id === componentId)?.image.full}" 
                                  alt="${allItems.find(i => i.id === componentId)?.name}"
                                  title="${allItems.find(i => i.id === componentId)?.name}">
                         `).join('')}
@@ -184,7 +197,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="transforms-title">Se transforme en:</div>
                     <div class="transform-items">
                         ${into.map(transformId => `
-                            <img src="https://ddragon.leagueoflegends.com/cdn/13.10.1/img/item/${allItems.find(i => i.id === transformId)?.image.full}"
+                            <img src="https://ddragon.leagueoflegends.com/cdn/14.22.1/img/item/${allItems.find(i => i.id === transformId)?.image.full}"
                                  alt="${allItems.find(i => i.id === transformId)?.name}"
                                  title="${allItems.find(i => i.id === transformId)?.name}">
                         `).join('')}
@@ -195,7 +208,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         itemDetails.innerHTML = `
             <h2>${name}</h2>
-            <img src="https://ddragon.leagueoflegends.com/cdn/13.10.1/img/item/${item.image.full}" 
+            <img src="https://ddragon.leagueoflegends.com/cdn/14.22.1/img/item/${item.image.full}" 
                  alt="${name}" 
                  class="main-image">
             ${statsHtml}
@@ -206,47 +219,45 @@ document.addEventListener('DOMContentLoaded', () => {
         `;
     }
 
-    function showModal(element) {
-        const rect = element.getBoundingClientRect();
-        const modalContent = modal.querySelector('.modal-content');
-    
-        let left = rect.right + 5;
-        let top = rect.top;
-    
-        if (left + modalContent.offsetWidth > window.innerWidth) {
-            left = rect.left - modalContent.offsetWidth - 5;
+    function updateMousePosition(e) {
+        mouseX = e.clientX;
+        mouseY = e.clientY;
+        if (modal.classList.contains('visible')) {
+            positionModal();
         }
-    
-        if (top + modalContent.offsetHeight > window.innerHeight) {
-            top = window.innerHeight - modalContent.offsetHeight;
-        }
-    
-        modalContent.style.left = `${left}px`;
-        modalContent.style.top = `${top}px`;
-        
-        modal.classList.add('visible');
     }
 
-    function hideContent() {
-        modal.classList.remove('modal');
-        activeItem = null;
+    document.addEventListener('mousemove', updateMousePosition);
+
+    function showModal(element) {
+        modal.classList.add('visible');
+        positionModal();
+    }
+
+    function positionModal() {
+        const modalContent = modal.querySelector('.modal-content');
+        const modalWidth = modalContent.offsetWidth;
+        const modalHeight = modalContent.offsetHeight;
+
+        let left = mouseX + 10; // 10px à droite du curseur
+        let top = mouseY + 10; // 10px en dessous du curseur
+
+        // Ajuster la position si le modal dépasse de la fenêtre
+        if (left + modalWidth > window.innerWidth) {
+            left = mouseX - modalWidth - 10;
+        }
+        if (top + modalHeight > window.innerHeight) {
+            top = window.innerHeight - modalHeight;
+        }
+
+        modalContent.style.left = `${left}px`;
+        modalContent.style.top = `${top}px`;
     }
 
     function hideModal() {
-        modal.classList.remove('modal');
+        modal.classList.remove('visible');
         activeItem = null;
     }
-
-function handleOutsideClick(event) {
-    console.log("Click détecté");
-    if (modal.classList.contains('visible')) {
-        console.log("Modal est visible");
-        if (!modal.querySelector('.modal-content').contains(event.target)) {
-            console.log("Clic en dehors du modal, fermeture...");
-            hideModal('.modal-content');
-        }
-    }
-}
 
     function formatStat(stat, value) {
         const formattedValue = stat.startsWith('Percent') ? `${(value * 100).toFixed(0)}%` : value;
@@ -288,6 +299,14 @@ function handleOutsideClick(event) {
             : allItems;
         displayItems(filteredItems);
     });
+
+    function handleOutsideClick(event) {
+        if (modal.classList.contains('visible')) {
+            if (!modal.querySelector('.modal-content').contains(event.target) && !event.target.closest('.item-card')) {
+                hideModal();
+            }
+        }
+    }
 
     document.addEventListener('click', handleOutsideClick);
 

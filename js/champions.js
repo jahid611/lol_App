@@ -3,37 +3,40 @@ document.addEventListener('DOMContentLoaded', () => {
     const championSearch = document.getElementById('championSearch');
     const roleFilter = document.getElementById('roleFilter');
     const difficultyFilter = document.getElementById('difficultyFilter');
-    const loading = document.getElementById('loading');
     const modal = document.getElementById('championModal');
-    const closeButton = modal.querySelector('.close-button');
+    const spellVideoModal = document.getElementById('spellVideoModal');
+    const closeButtons = document.querySelectorAll('.close-button');
     let allChampions = [];
 
     async function fetchChampions() {
         try {
-            showLoading();
-            const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${config.ddragonVersion}/data/${config.ddragonLang}/champion.json`);
+            const response = await fetch(getDdragonUrl(`data/${config.ddragonLang}/champion.json`));
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+            
             const data = await response.json();
             allChampions = Object.values(data.data);
-            console.log(`Nombre total de champions chargés : ${allChampions.length}`);
             displayChampions(allChampions);
         } catch (error) {
             console.error('Erreur lors de la récupération des champions:', error);
             championsList.innerHTML = '<p class="error">Erreur lors du chargement des champions. Veuillez réessayer plus tard.</p>';
-        } finally {
-            hideLoading();
         }
     }
 
     function displayChampions(champions) {
+        if (!champions || champions.length === 0) {
+            championsList.innerHTML = '<p>Aucun champion trouvé.</p>';
+            return;
+        }
+
         championsList.innerHTML = champions.map(champion => `
             <div class="champion-card" data-champion-id="${champion.id}">
                 <img 
-                    src="https://ddragon.leagueoflegends.com/cdn/${config.ddragonVersion}/img/champion/${champion.image.full}" 
+                    src="${getDdragonUrl(`img/champion/${champion.image.full}`)}" 
                     alt="${champion.name}"
-                    loading="lazy"
+                    onerror="this.onerror=null; this.src='placeholder.png';"
                 >
                 <div class="champion-info">
                     <p class="champion-name">${champion.name}</p>
@@ -55,19 +58,22 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function showChampionDetails(championId) {
         try {
-            showLoading();
-            const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${config.ddragonVersion}/data/${config.ddragonLang}/champion/${championId}.json`);
+            const response = await fetch(getDdragonUrl(`data/${config.ddragonLang}/champion/${championId}.json`));
+            
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
+            
             const data = await response.json();
             const champion = data.data[championId];
-
+    
             const modalContent = document.getElementById('championDetails');
             modalContent.innerHTML = `
                 <div class="champion-details">
                     <div class="champion-header">
-                        <img src="https://ddragon.leagueoflegends.com/cdn/${config.ddragonVersion}/img/champion/${champion.image.full}" alt="${champion.name}" class="champion-portrait">
+                        <img src="${getDdragonUrl(`img/champion/${champion.image.full}`)}" 
+                             alt="${champion.name}" 
+                             class="champion-portrait">
                         <div>
                             <h2>${champion.name}</h2>
                             <p class="champion-title">${champion.title}</p>
@@ -75,9 +81,17 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <p class="champion-lore">${champion.lore}</p>
                     <div class="champion-abilities">
+                        <div class="ability passive" data-champion-id="${championId}" data-spell-id="passive">
+                            <img src="${getDdragonUrl(`img/passive/${champion.passive.image.full}`)}" 
+                                 alt="${champion.passive.name}"
+                                 title="${champion.passive.name}">
+                            <p>Passive</p>
+                        </div>
                         ${champion.spells.map((spell, index) => `
-                            <div class="ability">
-                                <img src="https://ddragon.leagueoflegends.com/cdn/${config.ddragonVersion}/img/spell/${spell.image.full}" alt="${spell.name}">
+                            <div class="ability" data-champion-id="${championId}" data-spell-id="${spell.id}">
+                                <img src="${getDdragonUrl(`img/spell/${spell.image.full}`)}" 
+                                     alt="${spell.name}"
+                                     title="${spell.name}">
                                 <p>${['Q', 'W', 'E', 'R'][index]}</p>
                             </div>
                         `).join('')}
@@ -86,21 +100,81 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="champion-skins">
                         ${champion.skins.map(skin => `
                             <div class="skin-preview">
-                                <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${champion.id}_${skin.num}.jpg" alt="${skin.name}" loading="lazy">
-                                <p>${skin.name}</p>
+                                <img src="${config.ddragonBaseUrl}/img/champion/splash/${champion.id}_${skin.num}.jpg" 
+                                     alt="${skin.name === 'default' ? champion.name : skin.name}" 
+                                     loading="lazy">
+                                <p>${skin.name === 'default' ? champion.name : skin.name}</p>
                             </div>
                         `).join('')}
                     </div>
                 </div>
             `;
-
+    
             modal.classList.remove('hidden');
+    
+            modalContent.querySelectorAll('.ability').forEach(ability => {
+                ability.addEventListener('click', () => showSpellVideo(champion.name, ability.dataset.spellId));
+            });
         } catch (error) {
-            console.error('Erreur lors de la récupération des détails du champion:', error);
-        } finally {
-            hideLoading();
+            console.error('Error fetching champion details:', error);
+            alert('Error loading champion details. Please try again later.');
         }
     }
+
+    async function showSpellVideo(championName, spellId) {
+        const championId = championsData[championName];
+    
+        if (!championId) {
+            console.error(`Champion ID not found for: ${championName}`);
+            alert(`Champion "${championName}" not recognized.`);
+            return;
+        }
+    
+        let videoUrl;
+    
+        if (spellId === 'passive') {
+            videoUrl = `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/${championId}/ability_${championId}_P1.mp4`;
+        } else {
+            const spellType = spellId.charAt(spellId.length - 1);
+            const spellSuffix = {
+                'Q': 'Q1',
+                'W': 'W1',
+                'E': 'E1',
+                'R': 'R1'
+            }[spellType];
+    
+            if (!spellSuffix) {
+                console.error(`Invalid spell type: ${spellType}`);
+                alert(`Invalid spell type: ${spellType}`);
+                return;
+            }
+    
+            videoUrl = `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/${championId}/ability_${championId}_${spellSuffix}.mp4`;
+        }
+    
+        const spellVideoContainer = document.getElementById('spellVideoContainer');
+        spellVideoContainer.innerHTML = `
+            <video controls autoplay loop>
+                <source src="${videoUrl}" type="video/mp4">
+                Your browser does not support video playback.
+            </video>
+        `;
+    
+        const video = spellVideoContainer.querySelector('video');
+        
+        video.onerror = function() {
+            console.error(`Failed to load video for ${championName} ${spellId}`);
+            spellVideoContainer.innerHTML = `
+                <p>Sorry, the video for this ability is not available.</p>
+                <p>Attempted URL: ${videoUrl}</p>
+            `;
+        };
+    
+        // Show the video modal
+        const spellVideoModal = document.getElementById('spellVideoModal');
+        spellVideoModal.classList.remove('hidden');
+    }
+    
 
     function filterChampions() {
         const searchTerm = championSearch.value.toLowerCase();
@@ -114,6 +188,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 (selectedDifficulty === '1' && champion.info.difficulty <= 3) ||
                 (selectedDifficulty === '2' && champion.info.difficulty > 3 && champion.info.difficulty <= 7) ||
                 (selectedDifficulty === '3' && champion.info.difficulty > 7);
+            
             return nameMatch && roleMatch && difficultyMatch;
         });
 
@@ -123,15 +198,19 @@ document.addEventListener('DOMContentLoaded', () => {
     championSearch.addEventListener('input', filterChampions);
     roleFilter.addEventListener('change', filterChampions);
     difficultyFilter.addEventListener('change', filterChampions);
-    closeButton.addEventListener('click', () => modal.classList.add('hidden'));
-
-    function showLoading() {
-        loading.classList.remove('hidden');
-    }
-
-    function hideLoading() {
-        loading.classList.add('hidden');
-    }
+    closeButtons.forEach(button => {
+        button.addEventListener('click', () => {
+            modal.classList.add('hidden');
+            spellVideoModal.classList.add('hidden');
+        });
+    });
+    [modal, spellVideoModal].forEach(modalElement => {
+        modalElement.addEventListener('click', (e) => {
+            if (e.target === modalElement) {
+                modalElement.classList.add('hidden');
+            }
+        });
+    });
 
     fetchChampions();
 });

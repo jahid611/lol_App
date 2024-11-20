@@ -81,14 +81,14 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <p class="champion-lore">${champion.lore}</p>
                     <div class="champion-abilities">
-                        <div class="ability passive" data-champion-id="${championId}" data-spell-id="passive">
+                        <div class="ability passive" data-spell-id="passive">
                             <img src="${getDdragonUrl(`img/passive/${champion.passive.image.full}`)}" 
                                  alt="${champion.passive.name}"
                                  title="${champion.passive.name}">
                             <p>Passive</p>
                         </div>
                         ${champion.spells.map((spell, index) => `
-                            <div class="ability" data-champion-id="${championId}" data-spell-id="${spell.id}">
+                            <div class="ability" data-spell-id="${['Q', 'W', 'E', 'R'][index]}">
                                 <img src="${getDdragonUrl(`img/spell/${spell.image.full}`)}" 
                                      alt="${spell.name}"
                                      title="${spell.name}">
@@ -130,27 +130,19 @@ document.addEventListener('DOMContentLoaded', () => {
             return;
         }
     
-        let videoUrl;
-    
+        let spellSuffix;
         if (spellId === 'passive') {
-            videoUrl = `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/${championId}/ability_${championId}_P1.mp4`;
+            spellSuffix = 'P1';
         } else {
-            const spellType = spellId.charAt(spellId.length - 1);
-            const spellSuffix = {
+            spellSuffix = {
                 'Q': 'Q1',
                 'W': 'W1',
                 'E': 'E1',
                 'R': 'R1'
-            }[spellType];
-    
-            if (!spellSuffix) {
-                console.error(`Invalid spell type: ${spellType}`);
-                alert(`Invalid spell type: ${spellType}`);
-                return;
-            }
-    
-            videoUrl = `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/${championId}/ability_${championId}_${spellSuffix}.mp4`;
+            }[spellId] || 'Q1'; // Default to Q1 if somehow an invalid spellId is passed
         }
+    
+        const videoUrl = `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/${championId}/ability_${championId}_${spellSuffix}.mp4`;
     
         const spellVideoContainer = document.getElementById('spellVideoContainer');
         spellVideoContainer.innerHTML = `

@@ -1,9 +1,9 @@
 :root {
-    --primary-bg: #0A1428;
-    --secondary-bg: #1E2328;
-    --accent-color: #C8AA6E;
-    --text-color: #F0E6D2;
-    --stat-color: #0ACE3C;
+    --primary-color: #1a1a1a;
+    --secondary-color: #f1f1f1;
+    --accent-color: #c9aa71;
+    --error-color: #ff4655;
+    --success-color: #36b37e;
 }
 
 * {
@@ -13,256 +13,124 @@
 }
 
 body {
-    font-family: Arial, sans-serif;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     line-height: 1.6;
-    color: var(--text-color);
-    background-color: var(--primary-bg);
+    background-color: var(--secondary-color);
+    color: var(--primary-color);
 }
 
 header {
-    background-color: var(--secondary-bg);
+    background-color: var(--primary-color);
     padding: 1rem;
-    position: sticky;
-    top: 0;
-    z-index: 100;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 nav {
+    max-width: 1200px;
+    margin: 0 auto;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    max-width: 1200px;
-    margin: 0 auto;
 }
 
 .logo {
+    color: var(--accent-color);
     font-size: 1.5rem;
     font-weight: bold;
-    color: var(--accent-color);
 }
 
-.nav-links {
+nav ul {
     display: flex;
     list-style: none;
+    gap: 2rem;
 }
 
-.nav-links a {
-    color: var(--text-color);
+nav a {
+    color: var(--secondary-color);
     text-decoration: none;
     padding: 0.5rem 1rem;
-    transition: color 0.3s ease;
-}
-
-.nav-links a:hover, .nav-links a.active {
-    color: var(--accent-color);
-}
-
-.hero {
-    background-image: url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/Lux_0.jpg');
-    background-size: cover;
-    background-position: center;
-    height: 400px;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    text-align: center;
-    position: relative;
-}
-
-.hero::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background-color: rgba(0, 0, 0, 0.5);
-}
-
-.hero h1 {
-    font-size: 2.5rem;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
-    position: relative;
-    z-index: 1;
-}
-
-.search-container {
-    position: relative;
-    z-index: 1;
-    width: 50%;
-    max-width: 500px;
-}
-
-.search-bar {
-    width: 100%;
-    padding: 0.5rem;
-    font-size: 1rem;
-    border: none;
-    border-radius: 5px;
-    background-color: rgba(255, 255, 255, 0.8);
-}
-
-.search-button {
-    position: absolute;
-    right: 5px;
-    top: 50%;
-    transform: translateY(-50%);
-    background: none;
-    border: none;
-    color: var(--primary-bg);
-    cursor: pointer;
-}
-
-.content {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
-    padding: 2rem;
-    max-width: 1200px;
-    margin: 0 auto;
-}
-
-.section {
-    background-color: var(--secondary-bg);
-    border-radius: 5px;
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-    padding: 1rem;
-    margin-bottom: 1rem;
-    width: calc(33.33% - 1rem);
-}
-
-.section h2 {
-    color: var(--accent-color);
-    margin-bottom: 0.5rem;
-}
-
-.button-container {
-    display: flex;
-    justify-content: center;
-    gap: 1rem;
-    margin-top: 2rem;
-}
-
-.button {
-    display: inline-block;
-    background-color: var(--accent-color);
-    color: var(--primary-bg);
-    padding: 0.5rem 1rem;
-    text-decoration: none;
-    border-radius: 5px;
+    border-radius: 4px;
     transition: background-color 0.3s;
 }
 
-.button:hover {
-    background-color: #B8995C;
+nav a:hover,
+nav a.active {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
 }
 
-.news-ticker {
-    background-color: var(--secondary-bg);
-    padding: 0.5rem;
-    overflow: hidden;
-    margin-top: 2rem;
-}
-
-.news-ticker-content {
-    display: inline-block;
-    white-space: nowrap;
-    animation: ticker 30s linear infinite;
-}
-
-@keyframes ticker {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
-}
-
-footer {
-    background-color: var(--secondary-bg);
-    text-align: center;
-    padding: 1rem;
-    margin-top: 2rem;
-}
-
-.hidden {
-    display: none;
-}
-
-.search-results {
+main {
     max-width: 1200px;
     margin: 2rem auto;
     padding: 0 1rem;
+    min-height: calc(100vh - 160px);
 }
 
-.results-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
-    gap: 1rem;
-}
-
-.result-item {
-    background-color: var(--secondary-bg);
-    border-radius: 5px;
-    padding: 1rem;
-    text-align: center;
-    cursor: pointer;
-    transition: transform 0.3s ease;
-}
-
-.result-item:hover {
-    transform: scale(1.05);
-}
-
-.result-item img {
-    width: 100%;
-    height: auto;
-    border-radius: 5px;
-    margin-bottom: 0.5rem;
-}
-
-.modal {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.7);
+.loading {
     display: flex;
     justify-content: center;
     align-items: center;
-    z-index: 1000;
-}
-
-.modal-content {
-    background-color: var(--secondary-bg);
     padding: 2rem;
-    border-radius: 5px;
-    max-width: 500px;
-    width: 90%;
-    max-height: 90vh;
-    overflow-y: auto;
+}
+
+.spinner {
+    width: 50px;
+    height: 50px;
+    border: 5px solid var(--secondary-color);
+    border-top: 5px solid var(--accent-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hidden {
+    display: none !important;
+}
+
+.error {
+    background-color: var(--error-color);
+    color: white;
+    padding: 1rem;
+    border-radius: 4px;
+    margin: 1rem 0;
+}
+
+footer {
+    background-color: var(--primary-color);
+    color: var(--secondary-color);
+    text-align: center;
+    padding: 1rem;
     position: relative;
+    bottom: 0;
+    width: 100%;
 }
 
-.close-button {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 1.5rem;
+button {
+    background-color: var(--accent-color);
+    color: var(--primary-color);
+    border: none;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
     cursor: pointer;
-    color: var(--text-color);
+    transition: background-color 0.3s;
 }
 
-@media (max-width: 768px) {
-    .content {
-        flex-direction: column;
-    }
+button:hover {
+    background-color: #b89861;
+}
 
-    .section {
-        width: 100%;
-    }
+input, select {
+    padding: 0.5rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 1rem;
+}
 
-    .search-container {
-        width: 80%;
-    }
+input:focus, select:focus {
+    outline: none;
+    border-color: var(--accent-color);
 }

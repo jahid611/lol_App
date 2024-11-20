@@ -5,27 +5,53 @@ document.addEventListener('DOMContentLoaded', () => {
     const categoryFilter = document.getElementById('categoryFilter');
     const modal = document.getElementById('itemModal');
     const itemDetails = document.getElementById('itemDetails');
-    const closeButton = modal.querySelector('.close-button');
     let allItems = [];
     let activeItem = null;
-    let isModalVisible = false;
-    let hoverTimer;
-    const HOVER_DELAY = 1000; // 1 seconde
 
     const categories = {
-        'AttackDamage': 'Attack Damage',
-        'AttackSpeed': 'Attack Speed',
-        'AdaptiveForce': 'Adaptive Force',
-        'Armor': 'Armor',
-        'Health': 'Health',
-        'MagicResist': 'Magic Resist',
-        'MovementSpeed': 'Movement Speed',
-        'CriticalStrike': 'Critical Strike'
+        'AttackDamage': 'Dégâts d\'attaque',
+        'AttackSpeed': 'Vitesse d\'attaque',
+        'CriticalStrike': 'Coup critique',
+        'Armor': 'Armure',
+        'SpellBlock': 'Résistance magique',
+        'HealthRegen': 'Régénération de vie',
+        'ManaRegen': 'Régénération de mana',
+        'NonbootsMovement': 'Mouvement',
+        'Boots': 'Bottes',
+        'AbilityPower': 'Puissance',
+        'CooldownReduction': 'Réduction de temps de recharge',
+        'OnHit': 'Effets à l\'impact',
+        'Health': 'Santé',
+        'Mana': 'Mana',
+        'LifeSteal': 'Vol de vie',
+        'SpellVamp': 'Omnivampirisme'
+    };
+
+    const statIcons = {
+        FlatPhysicalDamageMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsattackdamageicon.png',
+        FlatMagicDamageMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsabilitypowericon.png',
+        PercentAttackSpeedMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsattackspeedicon.png',
+        FlatHPPoolMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodshealthscalingicon.png',
+        FlatSpellBlockMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsmagicresicon.png',
+        FlatArmorMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsarmoricon.png',
+        PercentMovementSpeedMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/styles/resolve/veteranaftershock/veteranaftershock.png',
+        FlatCritChanceMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/styles/precision/lethaltempotemporary/lethaltempotemporary.png'
+    };
+
+    const statNames = {
+        FlatPhysicalDamageMod: 'Dégâts d\'attaque',
+        FlatMagicDamageMod: 'Puissance',
+        PercentAttackSpeedMod: 'Vitesse d\'attaque',
+        FlatHPPoolMod: 'Santé',
+        FlatSpellBlockMod: 'Résistance magique',
+        FlatArmorMod: 'Armure',
+        PercentMovementSpeedMod: 'Vitesse de déplacement',
+        FlatCritChanceMod: 'Chance de coup critique',
     };
 
     async function fetchItems() {
         try {
-            const response = await fetch(getDdragonUrl(`data/${config.ddragonLang}/item.json`));
+            const response = await fetch('https://ddragon.leagueoflegends.com/cdn/13.10.1/data/fr_FR/item.json');
             if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
             const data = await response.json();
 
@@ -36,8 +62,7 @@ document.addEventListener('DOMContentLoaded', () => {
                            !item.tags.includes('Jungle') && 
                            !item.tags.includes('Lane') && 
                            !item.description.includes('Teamfight Tactics') && 
-                           !item.requiredChampion && 
-                           item.depth >= 2;
+                           !item.requiredChampion;
                 })
                 .map(([id, item]) => ({ id, ...item }));
 
@@ -86,18 +111,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeButton = document.querySelector(`.category-button[data-category="${category}"]`);
         if (activeButton) activeButton.classList.add('active');
 
-        const filteredItems = allItems.filter(item => {
-            return item.stats && Object.keys(item.stats).some(stat => {
-                return (category === 'AttackDamage' && stat === 'FlatPhysicalDamageMod') ||
-                       (category === 'AttackSpeed' && stat === 'PercentAttackSpeedMod') ||
-                       (category === 'AdaptiveForce' && (stat === 'FlatMagicDamageMod' || stat === 'FlatPhysicalDamageMod')) ||
-                       (category === 'Armor' && stat === 'FlatArmorMod') ||
-                       (category === 'Health' && stat === 'FlatHPPoolMod') ||
-                       (category === 'MagicResist' && stat === 'FlatSpellBlockMod') ||
-                       (category === 'MovementSpeed' && stat === 'PercentMovementSpeedMod') ||
-                       (category === 'CriticalStrike' && stat === 'FlatCritChanceMod');
-            });
-        });
+        const filteredItems = allItems.filter(item => item.tags && item.tags.includes(category));
         displayItems(filteredItems);
     }
 
@@ -115,201 +129,140 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.classList.add('item-card');
         card.innerHTML = `
-            <img class="item-hover-zone" src="${getDdragonUrl(`img/item/${item.image.full}`)}" alt="${item.name}" title="${item.name}" loading="lazy">
+            <img src="https://ddragon.leagueoflegends.com/cdn/13.10.1/img/item/${item.image.full}" alt="${item.name}" title="${item.name}" loading="lazy">
         `;
 
-        const hoverZone = card.querySelector('.item-hover-zone');
-
-        // Only add event listeners to the image itself
-        hoverZone.addEventListener('mouseenter', () => {
-            clearTimeout(hoverTimer);
-            hoverTimer = setTimeout(() => {
-                if (!isModalVisible || activeItem !== item) {
-                    showItemDetails(item, hoverZone); // Pass hoverZone instead of card
-                }
-            }, HOVER_DELAY);
-        });
-
-        hoverZone.addEventListener('mouseleave', () => {
-            clearTimeout(hoverTimer);
-            hideModal();
-        });
+        card.addEventListener('mouseenter', (e) => showItemDetails(item, e.currentTarget, e));
+        card.addEventListener('mouseleave', hideModal);
 
         return card;
     }
 
-    function showItemDetails(item, element) {
-        if (activeItem === item && isModalVisible) return;
+    function showItemDetails(item, element, e) {
+        if (activeItem === item) return;
         activeItem = item;
         updateModalContent(item);
         showModal(element);
-        isModalVisible = true;
+        e?.stopPropagation();
     }
 
     function updateModalContent(item) {
-        const { name, description, image, stats, gold } = item;
+        const { name, description, gold, stats, from, into } = item;
         
-        const formattedDescription = description
-            .replace(/physical damage/gi, '<span class="keyword-physical">physical damage</span>')
-            .replace(/magic damage/gi, '<span class="keyword-magic">magic damage</span>')
-            .replace(/UNIQUE/gi, '<span class="keyword-unique">UNIQUE</span>');
-    
+        const formattedDescription = description.replace(/<.*?>/g, '');
+        
+        let statsHtml = '';
+        if (stats) {
+            statsHtml = `<div class="stats-container">` + 
+                Object.entries(stats).map(([stat, value]) => `
+                    <div class="stat-line">${formatStat(stat, value)}</div>
+                `).join('') + 
+                `</div>`;
+        }
+
+        let recipeHtml = '';
+        if (from && from.length > 0) {
+            recipeHtml = `
+                <div class="recipe">
+                    <div class="recipe-title">Recette:</div>
+                    <div class="recipe-items">
+                        ${from.map(componentId => `
+                            <img src="https://ddragon.leagueoflegends.com/cdn/13.10.1/img/item/${allItems.find(i => i.id === componentId)?.image.full}" 
+                                 alt="${allItems.find(i => i.id === componentId)?.name}"
+                                 title="${allItems.find(i => i.id === componentId)?.name}">
+                        `).join('')}
+                    </div>
+                    <div class="remaining-cost">Coût restant: ${calculateRemainingCost(item)} or</div>
+                </div>
+            `;
+        }
+
+        let transformsHtml = '';
+        if (into && into.length > 0) {
+            transformsHtml = `
+                <div class="transforms">
+                    <div class="transforms-title">Se transforme en:</div>
+                    <div class="transform-items">
+                        ${into.map(transformId => `
+                            <img src="https://ddragon.leagueoflegends.com/cdn/13.10.1/img/item/${allItems.find(i => i.id === transformId)?.image.full}"
+                                 alt="${allItems.find(i => i.id === transformId)?.name}"
+                                 title="${allItems.find(i => i.id === transformId)?.name}">
+                        `).join('')}
+                    </div>
+                </div>
+            `;
+        }
+
         itemDetails.innerHTML = `
-            <h2 id="modalTitle">${name}</h2>
-            <img id="modalImage" src="${getDdragonUrl(`img/item/${image.full}`)}" alt="${name}">
-            
-            ${stats ? Object.entries(stats).map(([stat, value]) => `
-                <div class="stat-line">
-                    ${formatStat(stat, value)}
-                </div>
-            `).join('') : ''}
-    
-            ${description ? `
-                <div class="passive-section">
-                    <div class="passive-description">${formattedDescription}</div>
-                </div>
-            ` : ''}
-    
-            ${stats ? `
-                <div id="modalStats">
-                    ${Object.entries(stats).map(([stat, value]) => `
-                        <div class="stat-category">
-                            <img class="stat-icon" src="${getStatIcon(stat)}" alt="${stat}">
-                            <span class="stat-value">${formatStat(stat, value)}</span>
-                        </div>
-                    `).join('')}
-                </div>
-                ${createStatChart(stats)}
-            ` : ''}
-    
-            ${item.from ? `
-                <div class="recipe-section">
-                    <div class="recipe-title">Recipe:</div>
-                    <div class="recipe-items">
-                        ${item.from.map(itemId => `
-                            <img class="recipe-item" 
-                                 src="${getDdragonUrl(`img/item/${itemId}.png`)}" 
-                                 alt="Recipe item ${itemId}"
-                                 loading="lazy">
-                        `).join('')}
-                        <div class="recipe-cost">+300 (Crafting Cost)</div>
-                    </div>
-                </div>
-            ` : ''}
-            ${item.into ? `
-                <div class="recipe-section">
-                    <div class="recipe-title">Se transforme en:</div>
-                    <div class="recipe-items">
-                        ${item.into.map(itemId => `
-                            <img class="recipe-item" 
-                                 src="${getDdragonUrl(`img/item/${itemId}.png`)}" 
-                                 alt="Builds into item ${itemId}"
-                                 loading="lazy">
-                        `).join('')}
-                    </div>
-                </div>
-            ` : ''}
-    
-            ${gold ? `
-                <div class="gold-cost">
-                    <img class="gold-icon" src="${getStatIcon('gold')}" alt="Gold">
-                    <span>Prix: ${gold.total} gold</span>
-                </div>
-            ` : ''}
+            <h2>${name}</h2>
+            <img src="https://ddragon.leagueoflegends.com/cdn/13.10.1/img/item/${item.image.full}" 
+                 alt="${name}" 
+                 class="main-image">
+            ${statsHtml}
+            <p>${formattedDescription}</p>
+            <div class="gold-info">Prix: ${gold.total} or</div>
+            ${recipeHtml}
+            ${transformsHtml}
         `;
-    }
-
-    function getStatIcon(stat) {
-        const iconMap = {
-            FlatPhysicalDamageMod: 'statmodsadaptiveforceicon.png',
-            FlatMagicDamageMod: 'statmodsadaptiveforceicon.png',
-            PercentAttackSpeedMod: 'statmodsattackspeedicon.png',
-            FlatHPPoolMod: 'statmodshealthscalingicon.png',
-            FlatSpellBlockMod: 'statmodsmagicresicon.png',
-            FlatArmorMod: 'statmodsarmoricon.png',
-            PercentMovementSpeedMod: 'statmodsmovementspeedicon.png',
-            FlatCritChanceMod: 'statmodscdrscalingicon.png',
-            gold: 'statmodsgoldicon.png'
-        };
-        const iconName = iconMap[stat] || 'statmodsadaptiveforceicon.png';
-        return `https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/${iconName}`;
-    }
-
-    function formatStat(stat, value) {
-        const statNames = {
-            FlatPhysicalDamageMod: 'AD',
-            FlatMagicDamageMod: 'AP',
-            PercentAttackSpeedMod: 'Vitesse d\'attaque',
-            FlatHPPoolMod: 'Santé',
-            FlatSpellBlockMod: 'Résistance magique',
-            FlatArmorMod: 'Armure',
-            PercentMovementSpeedMod: 'Vitesse de déplacement',
-            FlatCritChanceMod: 'Chance de coup critique'
-        };
-
-        const formattedValue = stat.startsWith('Percent') ? `${(value * 100).toFixed(0)}%` : value;
-        return `${statNames[stat] || stat}: ${formattedValue}`;
     }
 
     function showModal(element) {
         const rect = element.getBoundingClientRect();
         const modalContent = modal.querySelector('.modal-content');
-        const viewportWidth = window.innerWidth;
-        const viewportHeight = window.innerHeight;
-        const itemsContainer = document.querySelector('.items-container');
-        const containerRect = itemsContainer.getBoundingClientRect();
-
-        let left = containerRect.right + 20;
-        let top = Math.max(60, rect.top + window.scrollY);
-
-        if (left + modalContent.offsetWidth > viewportWidth - 20) {
-            left = Math.max(20, containerRect.left - modalContent.offsetWidth - 20);
+    
+        let left = rect.right + 5;
+        let top = rect.top;
+    
+        if (left + modalContent.offsetWidth > window.innerWidth) {
+            left = rect.left - modalContent.offsetWidth - 5;
         }
-
-        if (top + modalContent.offsetHeight > viewportHeight + window.scrollY) {
-            top = viewportHeight + window.scrollY - modalContent.offsetHeight - 20;
+    
+        if (top + modalContent.offsetHeight > window.innerHeight) {
+            top = window.innerHeight - modalContent.offsetHeight;
         }
-
-        top = Math.max(60, top);
-
+    
         modalContent.style.left = `${left}px`;
         modalContent.style.top = `${top}px`;
         
         modal.classList.add('visible');
-        modal.setAttribute('aria-hidden', 'false');
     }
 
-    function hideModal() {
-        modal.classList.remove('visible');
-        modal.setAttribute('aria-hidden', 'true');
-        isModalVisible = false;
+    function hideContent() {
+        modal.classList.remove('modal');
         activeItem = null;
     }
 
-    closeButton.addEventListener('click', hideModal);
+    function hideModal() {
+        modal.classList.remove('modal');
+        activeItem = null;
+    }
 
-    modal.addEventListener('click', (e) => {
-        if (e.target === modal) hideModal();
-    });
-
-    // Simplify click handler to only check for hover-zone
-    document.addEventListener('click', (e) => {
-        if (!e.target.closest('.item-hover-zone')) {
-            hideModal();
+function handleOutsideClick(event) {
+    console.log("Click détecté");
+    if (modal.classList.contains('visible')) {
+        console.log("Modal est visible");
+        if (!modal.querySelector('.modal-content').contains(event.target)) {
+            console.log("Clic en dehors du modal, fermeture...");
+            hideModal('.modal-content');
         }
-    });
+    }
+}
 
-    document.addEventListener('wheel', () => {
-        if (isModalVisible) {
-            hideModal();
-        }
-    });
+    function formatStat(stat, value) {
+        const formattedValue = stat.startsWith('Percent') ? `${(value * 100).toFixed(0)}%` : value;
+        const iconUrl = statIcons[stat] || '';
+        const iconHtml = iconUrl ? `<img src="${iconUrl}" class="stat-icon" alt="">` : '';
+        return `${iconHtml} ${statNames[stat] || stat}: ${formattedValue}`;
+    }
 
-    window.addEventListener('keydown', (e) => {
-        if (e.key === 'Escape' && modal.classList.contains('visible')) {
-            hideModal();
-        }
-    });
+    function calculateRemainingCost(item) {
+        if (!item.from) return 0;
+        const componentsCost = item.from.reduce((total, componentId) => {
+            const component = allItems.find(i => i.id === componentId);
+            return total + (component ? component.gold.total : 0);
+        }, 0);
+        return item.gold.total - componentsCost;
+    }
 
     const debounce = (func, delay) => {
         let timeoutId;
@@ -336,36 +289,7 @@ document.addEventListener('DOMContentLoaded', () => {
         displayItems(filteredItems);
     });
 
-    function createStatChart(stats) {
-        const chartSize = 150;
-        const centerX = chartSize / 2;
-        const centerY = chartSize / 2;
-        const maxStat = Math.max(...Object.values(stats));
-        const angleStep = (Math.PI * 2) / Object.keys(stats).length;
-
-        let polygonPoints = '';
-        let labels = '';
-
-        Object.entries(stats).forEach(([stat, value], index) => {
-            const angle = index * angleStep - Math.PI / 2;
-            const radius = (value / maxStat) * (chartSize / 2 - 20);
-            const x = centerX + radius * Math.cos(angle);
-            const y = centerY + radius * Math.sin(angle);
-            
-            polygonPoints += `${x},${y} `;
-
-            const labelX = centerX + (chartSize / 2 - 10) * Math.cos(angle);
-            const labelY = centerY + (chartSize / 2 - 10) * Math.sin(angle);
-            labels += `<text x="${labelX}" y="${labelY}">${stat}</text>`;
-        });
-
-        return `
-            <svg class="stat-chart" viewBox="0 0 ${chartSize} ${chartSize}">
-              <polygon class="stat-chart-polygon" points="${polygonPoints}" />
-              <g class="stat-chart-labels">${labels}</g>
-            </svg>
-        `;
-    }
+    document.addEventListener('click', handleOutsideClick);
 
     fetchItems();
 });

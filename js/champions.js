@@ -3,12 +3,14 @@ document.addEventListener('DOMContentLoaded', () => {
     const championSearch = document.getElementById('championSearch');
     const roleFilter = document.getElementById('roleFilter');
     const difficultyFilter = document.getElementById('difficultyFilter');
+    const loading = document.getElementById('loading');
     const modal = document.getElementById('championModal');
     const closeButton = modal.querySelector('.close-button');
     let allChampions = [];
 
     async function fetchChampions() {
         try {
+            showLoading();
             const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${config.ddragonVersion}/data/${config.ddragonLang}/champion.json`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -20,6 +22,8 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) {
             console.error('Erreur lors de la récupération des champions:', error);
             championsList.innerHTML = '<p class="error">Erreur lors du chargement des champions. Veuillez réessayer plus tard.</p>';
+        } finally {
+            hideLoading();
         }
     }
 
@@ -30,7 +34,6 @@ document.addEventListener('DOMContentLoaded', () => {
                     src="https://ddragon.leagueoflegends.com/cdn/${config.ddragonVersion}/img/champion/${champion.image.full}" 
                     alt="${champion.name}"
                     loading="lazy"
-                    onerror="this.onerror=null; this.src='/assets/images/champion-placeholder.png';"
                 >
                 <div class="champion-info">
                     <p class="champion-name">${champion.name}</p>
@@ -52,6 +55,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function showChampionDetails(championId) {
         try {
+            showLoading();
             const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/${config.ddragonVersion}/data/${config.ddragonLang}/champion/${championId}.json`);
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
@@ -93,6 +97,8 @@ document.addEventListener('DOMContentLoaded', () => {
             modal.classList.remove('hidden');
         } catch (error) {
             console.error('Erreur lors de la récupération des détails du champion:', error);
+        } finally {
+            hideLoading();
         }
     }
 
@@ -118,6 +124,14 @@ document.addEventListener('DOMContentLoaded', () => {
     roleFilter.addEventListener('change', filterChampions);
     difficultyFilter.addEventListener('change', filterChampions);
     closeButton.addEventListener('click', () => modal.classList.add('hidden'));
+
+    function showLoading() {
+        loading.classList.remove('hidden');
+    }
+
+    function hideLoading() {
+        loading.classList.add('hidden');
+    }
 
     fetchChampions();
 });

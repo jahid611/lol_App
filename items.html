@@ -3,10 +3,20 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Explorateur d'objets LoL</title>
+    <title>Explorateur d'objets LoL Pro</title>
     <link rel="stylesheet" href="/css/items.css">
+    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
+
 </head>
 <body>
+    <nav class="main-nav">
+        <ul>
+            <li><a href="/index.html">Accueil</a></li>
+            <li><a href="/champions.html">Champions</a></li>
+            <li><a href="/items.html" class="active">Objets</a></li>
+        </ul>
+    </nav>
+
     <div class="app-container">
         <header>
             <h1>Explorateur d'objets LoL</h1>
@@ -25,18 +35,18 @@
                 <!-- Les items s'afficheront ici -->
             </div>
         </main>
+        <footer>
+            <p>© 2023 Explorateur d'objets LoL Pro. Tous droits réservés.</p>
+        </footer>
+    </div>
 
-        <div id="itemModal" class="modal" aria-hidden="true">
-            <div class="modal-content" role="dialog" aria-labelledby="modalTitle">
-                <button class="close-button" aria-label="Fermer">&times;</button>
-                <div id="itemDetails">
-                    <!-- Le contenu du modal sera inséré ici dynamiquement -->
-                </div>
-            </div>
+    <div id="itemModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div id="itemDetails"></div>
         </div>
     </div>
 
-    <script src="/js/config.js"></script>
     <script src="/js/items.js"></script>
+    <script src="/js/config.js"></script>
 </body>
 </html>

@@ -362,7 +362,7 @@ body {
     aspect-ratio: 1/1;
     border-radius: 25px;
     grid-template-columns: 1fr 1fr;
-    margin-top: 00px;
+    margin-top: 400px;
     gap: 3rem;
     
 }
@@ -388,6 +388,7 @@ body {
     line-height: 1.2; /* Réduit l'espace entre les lignes */
     letter-spacing: -0.5px; /* Réduit l'espacement entre les lettres */
     margin: 0; /* Réduit la marge */
+    margin-bottom: 15px;
     padding: 0; /* Réduit le padding */
     font-weight: normal; /* Ajuste le poids de la police pour un texte plus fin */
     font-size: 1rem; /* Réduit la taille de la police si nécessaire */
@@ -395,7 +396,10 @@ body {
 
 .ability-description h4 {
     font-size: 2.2rem;
+    top: 35%;
     margin-left: 18px;
+    position: relative;
+    margin-top: 15px;
     font-family: "Beaufort for LOL Bold", serif; /* Réduit la taille du titre pour plus de compacité */
     margin-bottom: 0.5rem; /* Réduit l'espacement sous le titre */
     text-transform: uppercase;
@@ -404,15 +408,18 @@ body {
 }
 
 .ability-description p {
-    font-size: 0.9rem; /* Réduit encore la taille du texte */
-    line-height: 1.6; /* Réduit l'espacement des lignes pour plus de compacité */
-    letter-spacing: -0.5px; /* Réduit l'espacement entre les lettres */
-    margin-top: 0; /* Retire l'espacement supérieur */
-    font-weight: normal; /* Normalise le poids du texte */
-    color: var(--color-text-secondary);
-    margin-left: -2px;
-    font-style: italic;
-
+    font-size: 1rem; /* Augmente légèrement la taille du texte */
+    line-height: 1.2; /* Réduit l'espacement des lignes pour compresser verticalement */
+    letter-spacing: 0px; /* Supprime la réduction de l'espacement entre les lettres */
+    margin: 0; /* Enlève les marges supérieures et inférieures */
+    font-weight: normal; /* Conserve un poids de texte normal */
+    color: var(--color-text-secondary); /* Applique la couleur secondaire */
+    text-align: justify; /* Étend le texte horizontalement pour remplir la ligne */
+    font-style: normal; /* Remet le texte à un style normal */
+    padding: 0 10px; /* Ajoute un léger padding horizontal pour plus d'équilibre */
+    max-width: 100%; /* Assure que le texte s'étire horizontalement dans son conteneur */
+    position: relative;
+    top: 35%;
 }
 
 .ability-name {
@@ -557,6 +564,8 @@ body {
         justify-content: center;
         width: 100%;
         margin-bottom: 1rem;
+        margin-top: 5rem;
+        
     }
 
     .ability-preview {
@@ -565,6 +574,7 @@ body {
 
     .champion-info-section {
         padding: 2rem 1rem;
+        margin-top: 15rem;
     }
 
     .section-title {

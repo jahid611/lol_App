@@ -3,49 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoL Champions</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="css/champions.css">
+    <title>Champions - League of Legends</title>
+    <link rel="stylesheet" href="/css/champions.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
-    <div class="background-overlay"></div>
-    
-    <main>
-        <div class="champions-container">
-            <div class="search-controls">
-                <div class="search-wrapper">
+    <header class="site-header">
+        <nav class="main-nav">
+            <ul class="nav-list">
+                <li><a href="/index.html" class="nav-link">Accueil</a></li>
+                <li><a href="/champions.html" class="nav-link">Champions</a></li>
+                <li><a href="/items.html" class="nav-link">Items</a></li>
+                <li><a href="#" class="nav-link">Actualités</a></li>
+                <li><a href="#" class="nav-link">Esports</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main class="main-content">
+        <h1 class="section-title">CHAMPIONS DE LEAGUE OF LEGENDS</h1>
+        <p class="section-description">Découvrez les champions légendaires qui se battent dans la Faille de l'invocateur</p>
+
+        <div class="search-filter-container">
+            <div class="search-wrapper">
+                <input type="search" id="championSearch" class="search-input" placeholder="Rechercher un champion">
+                <button class="search-button">
                     <i class="fas fa-search"></i>
-                    <input type="text" id="championSearch" placeholder="Rechercher un champion..." class="search-input">
-                </div>
-                <div class="filter-wrapper">
-                    <i class="fas fa-filter"></i>
-                    <select id="roleFilter" class="filter-select">
-                        <option value="">Tous les rôles</option>
-                        <option value="Fighter">Combattant</option>
-                        <option value="Tank">Tank</option>
-                        <option value="Mage">Mage</option>
-                        <option value="Assassin">Assassin</option>
-                        <option value="Marksman">Tireur</option>
-                        <option value="Support">Support</option>
-                    </select>
-                </div>
+                </button>
             </div>
-            <div id="championsList" class="champions-grid"></div>
+            <div class="filter-wrapper">
+                <select id="roleFilter" class="filter-select">
+                    <option value="">Tous les rôles</option>
+                    <option value="Assassin">Assassin</option>
+                    <option value="Fighter">Combattant</option>
+                    <option value="Mage">Mage</option>
+                    <option value="Marksman">Tireur</option>
+                    <option value="Support">Support</option>
+                    <option value="Tank">Tank</option>
+                </select>
+            </div>
+        </div>
+
+        <div id="championsList" class="champions-grid">
+            <!-- Les cartes des champions seront insérées ici par JavaScript -->
         </div>
     </main>
 
     <div id="championModal" class="champion-modal">
         <div class="modal-content">
-            <button class="close-button"><i class="fas fa-times"></i></button>
-            <div id="championDetails" class="champion-details">
-                <!-- Le contenu sera injecté dynamiquement -->
+            <button class="close-button">
+                <i class="fas fa-times"></i>
+                <span class="sr-only">X</span>
+            </button>
+            <div id="championDetails">
+                <!-- Les détails du champion seront insérés ici par JavaScript -->
             </div>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="js/champ-data.js"></script>
-    <script src="js/config.js"></script>
-    <script src="js/champions.js"></script>
+    <footer class="site-footer">
+        <div class="footer-content">
+            <div class="footer-logo">
+                <img src="/placeholder.svg?height=40&width=120" alt="Logo League of Legends">
+            </div>
+            <ul class="footer-links">
+                <li><a href="#" class="footer-link">À propos</a></li>
+                <li><a href="#" class="footer-link">Support</a></li>
+                <li><a href="#" class="footer-link">Communauté</a></li>
+            </ul>
+            <div class="social-links">
+                <a href="#" class="social-link"><i class="fab fa-facebook"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-twitter"></i></a>
+                <a href="#" class="social-link"><i class="fab fa-instagram"></i></a>
+            </div>
+        </div>
+        <p class="footer-copyright">&copy; 2024 Riot Games, Inc. Tous droits réservés.</p>
+    </footer>
+
+    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+    <script src="/js/champions.js"></script>
+    <script src="/js/champ-data.js"></script>
+    <script src="/js/config.js"></script>
+
 </body>
 </html>

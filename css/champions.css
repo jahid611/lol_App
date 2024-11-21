@@ -1,9 +1,23 @@
 :root {
-    --color-background: #0A0A0C;
-    --color-gold: #C8AA6E;
-    --color-blue: #0AC8B9;
+    --color-gold: #C89B3C;
+    --color-gold-dark: #785A28;
+    --color-background: #010A13;
+    --color-background-light: #1E2328;
     --color-text: #F0E6D2;
-    --color-text-dark: #A09B8C;
+    --color-text-secondary: #A09B8C;
+    --color-border: #3C3C41;
+    --font-beaufort: "Beaufort for LOL", serif;
+    --font-spiegel: "Spiegel", "Arial Narrow", Arial, sans-serif;
+}
+
+@font-face {
+    font-family: "Beaufort for LOL Bold";
+    src: url("https://db.onlinewebfonts.com/t/12420e8c141ca7c3dff41de2d59df13e.eot");
+    src: url("https://db.onlinewebfonts.com/t/12420e8c141ca7c3dff41de2d59df13e.eot?#iefix")format("embedded-opentype"),
+    url("https://db.onlinewebfonts.com/t/12420e8c141ca7c3dff41de2d59df13e.woff2")format("woff2"),
+    url("https://db.onlinewebfonts.com/t/12420e8c141ca7c3dff41de2d59df13e.woff")format("woff"),
+    url("https://db.onlinewebfonts.com/t/12420e8c141ca7c3dff41de2d59df13e.ttf")format("truetype"),
+    url("https://db.onlinewebfonts.com/t/12420e8c141ca7c3dff41de2d59df13e.svg#Beaufort for LOL Bold")format("svg");
 }
 
 * {
@@ -15,55 +29,100 @@
 body {
     background-color: var(--color-background);
     color: var(--color-text);
-    font-family: 'Beaufort for LOL', Arial, sans-serif;
+    font-family: var(--font-spiegel);
     line-height: 1.6;
 }
 
-.background-overlay {
-    position: fixed;
+.site-header {
+    background-color: var(--color-background-light);
+    padding: 1rem 0;
+    position: sticky;
     top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-image: url('path/to/background-image.jpg');
-    background-size: cover;
-    background-position: center;
-    opacity: 0.1;
-    z-index: -1;
+    z-index: 1000;
 }
 
-.champions-container {
+.main-nav {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 2rem;
+    padding: 0 1rem;
 }
 
-.search-controls {
+.nav-list {
+    display: flex;
+    justify-content: center;
+    list-style-type: none;
+}
+
+.nav-link {
+    color: var(--color-text);
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    font-family: var(--font-beaufort);
+    font-weight: bold;
+    text-transform: uppercase;
+    transition: color 0.3s ease;
+}
+
+.nav-link:hover {
+    color: var(--color-gold);
+}
+
+.main-content {
+    max-width: 1200px;
+    margin: 2rem auto;
+    padding: 0 1rem;
+}
+
+.section-title {
+    font-family: var(--font-beaufort);
+    font-size: 2.5rem;
+    color: var(--color-gold);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.section-title h3 {
+    font-family: var(--font-beaufort);
+    font-size: 2.5rem;
+    color: var(--color-gold);
+    text-align: center;
+    margin-bottom: 1rem;
+}
+
+.section-description {
+    text-align: center;
+    color: var(--color-text-secondary);
+    margin-bottom: 2rem;
+}
+
+.search-filter-container {
     display: flex;
     justify-content: space-between;
     margin-bottom: 2rem;
 }
 
 .search-wrapper, .filter-wrapper {
-    position: relative;
     flex: 1;
 }
 
 .search-input, .filter-select {
     width: 100%;
-    padding: 0.5rem 2rem 0.5rem 2.5rem;
-    background-color: rgba(0, 0, 0, 0.3);
-    border: 1px solid var(--color-gold);
+    padding: 0.5rem;
+    background-color: var(--color-background-light);
+    border: 1px solid var(--color-border);
     color: var(--color-text);
     font-size: 1rem;
 }
 
-.search-wrapper i, .filter-wrapper i {
-    position: absolute;
-    left: 0.75rem;
-    top: 50%;
-    transform: translateY(-50%);
+.search-input::placeholder {
+    color: var(--color-text-secondary);
+}
+
+.search-button {
+    background: none;
+    border: none;
     color: var(--color-gold);
+    cursor: pointer;
 }
 
 .champions-grid {
@@ -74,9 +133,8 @@ body {
 
 .champion-card {
     position: relative;
-    border-radius: 8px;
     overflow: hidden;
-    cursor: pointer;
+    border-radius: 8px;
     transition: transform 0.3s ease;
 }
 
@@ -86,8 +144,8 @@ body {
 
 .champion-card img {
     width: 100%;
-    height: 300px;
-    object-fit: cover;
+    height: auto;
+    display: block;
 }
 
 .champion-info {
@@ -96,78 +154,77 @@ body {
     left: 0;
     right: 0;
     padding: 1rem;
-    background: linear-gradient(transparent, rgba(0,0,0,0.9));
+    background: linear-gradient(transparent, rgba(0,0,0,0.8));
     color: var(--color-text);
 }
 
-.champion-stats {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(0,0,0,0.8);
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    opacity: 0;
-    transition: opacity 0.3s ease;
+.champion-info h3 {
+    font-family: var(--font-beaufort);
+    
+    font-size: 1.2rem;
+    margin-bottom: 0.25rem;
 }
 
-.champion-card:hover .champion-stats {
-    opacity: 1;
-}
-
-.stats-chart {
-    width: 200px !important;
-    height: 200px !important;
+.champion-info p {
+    font-size: 0.9rem;
+    color: var(--color-text-secondary);
 }
 
 .champion-modal {
-    display: none;
     position: fixed;
     top: 0;
     left: 0;
     width: 100%;
     height: 100%;
     background-color: var(--color-background);
+    z-index: 1001;
     overflow-y: auto;
-    z-index: 1000;
+    display: none;
+}
+
+.champion-modal.active {
+    display: block;
 }
 
 .modal-content {
     width: 100%;
     min-height: 100vh;
     padding: 0;
-    position: relative;
+    margin: 0;
 }
 
 .close-button {
     position: fixed;
     top: 2rem;
     right: 2rem;
-    background: none;
+    background: rgba(0, 0, 0, 0.5);
     border: none;
     color: var(--color-gold);
-    font-size: 2rem;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
     cursor: pointer;
-    z-index: 1001;
+    z-index: 1002;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s ease;
 }
 
-.champion-details {
-    width: 100%;
+.close-button:hover {
+    background-color: var(--color-gold);
+    color: var(--color-background);
+    transform: rotate(90deg);
 }
 
 .champion-header {
     position: relative;
     height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: flex-end;
-    padding: 2rem;
     background-size: cover;
     background-position: center;
+    display: flex;
+    align-items: flex-end;
+    padding: 4rem;
 }
 
 .champion-header::before {
@@ -175,138 +232,392 @@ body {
     position: absolute;
     top: 0;
     left: 0;
+    right: 0;
+    bottom: 0;
+    background: linear-gradient(
+        to bottom,
+        transparent 20%,
+        #010A13 100%
+    );
+}
+
+.champion-header-content {
+    position: relative;
+    z-index: 1;
+    width: 1200px;
+    margin: 0 auto;
     width: 100%;
-    height: 100%;
-    background: linear-gradient(transparent, var(--color-background));
+    
 }
 
 .champion-title {
-    position: relative;
-    z-index: 1;
-    color: var(--color-gold);
-    font-size: 4rem;
-    margin-bottom: 1rem;
+    color: #C8AA6E;
+    font-size: 32px;
+    text-transform: uppercase;
+    margin-bottom: 45rem;
+    margin-left: 5rem;
+    font-family: "Beaufort for LOL Bold", serif;
+    font-style: italic;
 }
 
-.champion-subtitle {
-    position: relative;
-    z-index: 1;
+.champion-name {
+    font-size: 72px;
     color: var(--color-text);
-    font-size: 1.5rem;
+    font-family: var(--font-beaufort);
+    text-transform: uppercase;
+    margin-bottom: 34rem;
+    line-height: 1;
 }
 
 .champion-info-section {
+    max-width: 1200px;
+    margin: 0 auto;
     padding: 4rem 2rem;
+    font-family: "Beaufort for LOL Bold", serif;
+    
+}
+
+.champion-info-section p {
+    max-width: 1200px;
+    margin: 0 auto;
+    font-size: 19px;
+    padding: 1rem 2rem;
+    font-family: "Beaufort for LOL Bold", serif;
+    margin-left: 5rem;
+    font-style: italic;
+
 }
 
 .section-title {
+    font-family: "Beaufort for LOL Bold", serif;
+    font-size: 36px;
     color: var(--color-gold);
-    font-size: 2rem;
     margin-bottom: 2rem;
     text-transform: uppercase;
+    font-style: italic;
+    
+}
+
+.abilities-container {
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 2rem;
+    align-items: start;
 }
 
 .abilities {
     display: flex;
+    margin-left: -180px;
+    flex-direction: column;
     gap: 1rem;
-    margin-bottom: 2rem;
+    width: 80px;
 }
 
 .ability {
+    width: 64px;
+    height: 64px;
+    border: 2px solid var(--color-border);
+    border-radius: 8px;
+    overflow: hidden;
     cursor: pointer;
-    text-align: center;
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+.ability:hover, 
+.ability.active {
+    border-color: var(--color-gold);
+    transform: translateY(-2px);
 }
 
 .ability img {
-    width: 64px;
-    height: 64px;
-    border: 2px solid var(--color-gold);
-    border-radius: 8px;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    
+}
+
+.ability-key {
+    position: absolute;
+    bottom: 4px;
+    left: 4px;
+    background: rgba(0, 0, 0, 0.7);
+    color: var(--color-text);
+    font-size: 12px;
+    padding: 2px 4px;
+    border-radius: 3px;
 }
 
 .ability-preview {
-    margin-top: 2rem;
-    position: relative;
-    width: 100%;
-    padding-top: 56.25%;
+    display: grid;
+    aspect-ratio: 4/3;
+    grid-template-columns: 1fr 1fr;
+    margin-top: -500px;
+    gap: 3rem;
+    border-radius: 15%;
 }
 
 .ability-preview video {
-    position: absolute;
-    top: 0;
-    left: 0;
+    display: grid;
+    aspect-ratio: 1/1;
+    border-radius: 25px;
+    grid-template-columns: 1fr 1fr;
+    margin-top: 00px;
+    gap: 3rem;
+    
+}
+
+.ability-video {
     width: 100%;
+    border-radius: 15%;
+    aspect-ratio: 1/1;
+    background: var(--color-background-light);
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+.ability-video video {
+    border-radius: 15%;
+    width: 100%;
+    aspect-ratio: 1/1;
     height: 100%;
     object-fit: cover;
 }
 
+.ability-description {
+    line-height: 1.2; /* Réduit l'espace entre les lignes */
+    letter-spacing: -0.5px; /* Réduit l'espacement entre les lettres */
+    margin: 0; /* Réduit la marge */
+    padding: 0; /* Réduit le padding */
+    font-weight: normal; /* Ajuste le poids de la police pour un texte plus fin */
+    font-size: 1rem; /* Réduit la taille de la police si nécessaire */
+}
+
+.ability-description h4 {
+    font-size: 2.2rem;
+    margin-left: 18px;
+    font-family: "Beaufort for LOL Bold", serif; /* Réduit la taille du titre pour plus de compacité */
+    margin-bottom: 0.5rem; /* Réduit l'espacement sous le titre */
+    text-transform: uppercase;
+    font-style: italic;
+    color: var(--color-gold);
+}
+
+.ability-description p {
+    font-size: 0.9rem; /* Réduit encore la taille du texte */
+    line-height: 1.6; /* Réduit l'espacement des lignes pour plus de compacité */
+    letter-spacing: -0.5px; /* Réduit l'espacement entre les lettres */
+    margin-top: 0; /* Retire l'espacement supérieur */
+    font-weight: normal; /* Normalise le poids du texte */
+    color: var(--color-text-secondary);
+    margin-left: -2px;
+    font-style: italic;
+
+}
+
+.ability-name {
+    color: var(--color-gold);
+    font-family: var(--font-beaufort);
+    font-size: 24px;
+    margin-bottom: 1rem;
+}
+
+.ability-text {
+    color: var(--color-text-secondary);
+    font-size: 16px;
+    line-height: 1.6;
+}
+
 .skins-section {
-    position: relative;
+    margin-top: 4rem;
 }
 
 .skin-preview {
-    width: 100%;
-    height: 100vh;
-    background-size: cover;
-    background-position: center;
-    position: relative;
+    width: 1800px; /* L'image prend toute la largeur de la page */
+    height: 900px; /* Vous pouvez ajuster la hauteur selon vos besoins */
+    background-size: cover; /* L'image couvre toute la largeur et la hauteur du conteneur */
+    background-position: center; /* L'image est centrée dans le conteneur */
+    border-radius: 8px; /* Appliquez un rayon de bordure si souhaité */
+    margin-bottom: 1rem;
+    margin-left: -340px; /* Espacement sous l'image */
+    
 }
 
-.skin-preview::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: linear-gradient(transparent, var(--color-background));
-}
 
-.skin-title {
-    position: absolute;
-    bottom: 2rem;
-    left: 2rem;
-    color: var(--color-gold);
-    font-size: 2rem;
-}
 
 .skin-thumbnails {
     display: flex;
-    gap: 1rem;
-    padding: 1rem;
+    gap: 0.5rem;
     overflow-x: auto;
-    background: rgba(0,0,0,0.5);
+    padding-bottom: 1rem;
 }
 
 .skin-thumbnail {
     width: 100px;
-    height: 100px;
-    object-fit: cover;
+    height: 80px;
+    border: 1.5px solid var(--color-border);
+    border-radius: 2px;
     cursor: pointer;
-    border: 2px solid transparent;
     transition: border-color 0.3s ease;
 }
 
-.skin-thumbnail.active {
+
+
+.skin-thumbnail:hover, .skin-thumbnail.active {
     border-color: var(--color-gold);
 }
 
+.stats-chart {
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+.site-footer {
+    background-color: var(--color-background-light);
+    color: var(--color-text-secondary);
+    padding: 2rem 0;
+    margin-top: 2rem;
+}
+
+.footer-content {
+    max-width: 1200px;
+    margin: 0 auto;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.footer-logo img {
+    height: 40px;
+}
+
+.footer-links {
+    display: flex;
+    gap: 1rem;
+    list-style-type: none;
+}
+
+.footer-link {
+    color: var(--color-text-secondary);
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.footer-link:hover {
+    color: var(--color-gold);
+}
+
+.social-links {
+    display: flex;
+    gap: 1rem;
+}
+
+.social-link {
+    color: var(--color-text-secondary);
+    transition: color 0.3s ease;
+}
+
+.social-link:hover {
+    color: var(--color-gold);
+}
+
+.footer-copyright {
+    width: 100%;
+    text-align: center;
+    margin-top: 1rem;
+    font-size: 0.9rem;
+}
+
 @media (max-width: 768px) {
-    .search-controls {
+    .search-filter-container {
         flex-direction: column;
         gap: 1rem;
     }
 
-    .champion-title {
-        font-size: 3rem;
+    .champions-grid {
+        grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
     }
 
-    .champion-subtitle {
-        font-size: 1.2rem;
+    .champion-header {
+        padding: 2rem;
+        height: 70vh;
+    }
+
+    .champion-name {
+        font-size: 48px;
+    }
+
+    .abilities-container {
+        grid-template-columns: 1fr;
     }
 
     .abilities {
-        flex-wrap: wrap;
+        flex-direction: row;
         justify-content: center;
+        width: 100%;
+        margin-bottom: 1rem;
     }
+
+    .ability-preview {
+        grid-template-columns: 1fr;
+    }
+
+    .champion-info-section {
+        padding: 2rem 1rem;
+    }
+
+    .section-title {
+        font-size: 28px;
+        
+    }
+
+    
+
+    .footer-content {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--color-background);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--color-gold-dark);
+    border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--color-gold);
+}
+
+.champion-type-tags {
+    display: flex;
+    gap: 0.5rem;
+    margin-top: 1rem;
+}
+
+.champion-type-tag {
+    background: rgba(200, 170, 110, 0.2);
+    border: 1px solid var(--color-gold);
+    color: var(--color-gold);
+    padding: 0.25rem 0.75rem;
+    border-radius: 4px;
+    font-size: 14px;
+    text-transform: uppercase;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.champion-modal.active .modal-content {
+    animation: fadeIn 0.3s ease-out;
 }

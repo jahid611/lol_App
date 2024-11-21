@@ -3,51 +3,48 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoL Champions</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="/css/champions.css">
-
+    <title>Explorateur d'objets LoL Pro</title>
+    <link rel="stylesheet" href="/css/items.css">
+    <link rel="icon" href="/assets/images/favicon.ico" type="image/x-icon">
 </head>
 <body>
-    <div class="background-overlay"></div>
-    
-    <main>
-        <div class="champions-container">
-            <div class="search-controls">
-                <div class="search-wrapper">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="championSearch" placeholder="Rechercher un champion..." class="search-input">
-                </div>
-                <div class="filter-wrapper">
-                    <i class="fas fa-filter"></i>
-                    <select id="roleFilter" class="filter-select">
-                        <option value="">Tous les rôles</option>
-                        <option value="Fighter">Combattant</option>
-                        <option value="Tank">Tank</option>
-                        <option value="Mage">Mage</option>
-                        <option value="Assassin">Assassin</option>
-                        <option value="Marksman">Tireur</option>
-                        <option value="Support">Support</option>
-                    </select>
-                </div>
-            </div>
-            <div id="championsList" class="champions-grid"></div>
-        </div>
-    </main>
+    <nav class="main-nav">
+        <ul>
+            <li><a href="/index.html">Accueil</a></li>
+            <li><a href="/champions.html">Champions</a></li>
+            <li><a href="/items.html" class="active">Objets</a></li>
+        </ul>
+    </nav>
 
-    <div id="championModal" class="champion-modal">
-        <div class="modal-content">
-            <button class="close-button"><i class="fas fa-times"></i></button>
-            <div id="championDetails" class="champion-details">
-                <!-- Le contenu sera injecté dynamiquement -->
+    <div class="app-container">
+        <header>
+            <h1>Explorateur d'objets LoL</h1>
+            <div class="controls">
+                <input type="text" id="searchBar" placeholder="Rechercher un objet..." aria-label="Rechercher un objet">
+                <select id="categoryFilter" aria-label="Filtrer par catégorie">
+                    <option value="">Toutes les catégories</option>
+                </select>
             </div>
-        </div>
+        </header>
+        <main>
+            <div id="categoriesList" class="categories-list">
+                <!-- Les catégories s'afficheront ici -->
+            </div>
+            <div id="itemsList" class="items-container">
+                <!-- Les items s'afficheront ici -->
+            </div>
+        </main>
+        <footer>
+            <p>© 2023 Explorateur d'objets LoL Pro. Tous droits réservés.</p>
+        </footer>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="/js/champ-data.js"></script>
+    <div id="itemModal" class="modal" aria-hidden="true">
+        <div class="modal-content">
+            <div id="itemDetails"></div>
+        </div>
+    </div>
     <script src="/js/config.js"></script>
-    <script src="/js/champions.js"></script>
+    <script src="/js/items.js"></script>
 </body>
 </html>

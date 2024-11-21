@@ -20,39 +20,48 @@ document.addEventListener('DOMContentLoaded', () => {
         return new Chart(canvas, {
             type: 'radar',
             data: {
-                labels: ['Attaque', 'Défense', 'Magie', 'Difficulté'],
+                labels: ['Dégâts', 'Tankiness', 'CC', 'Vitesse', 'Régénération', 'Mobilité'],  // Mises à jour des catégories
                 datasets: [{
-                    data: [stats.attack, stats.defense, stats.magic, stats.difficulty],
-                    backgroundColor: 'rgba(200, 170, 110, 0.2)',
-                    borderColor: 'rgba(200, 170, 110, 1)',
+                    data: [stats.damage, stats.tankiness, stats.cc, stats.speed, stats.regeneration, stats.mobility], // Remplir avec les bonnes valeurs
+                    backgroundColor: 'rgba(255, 99, 132, 0.2)', // Couleur de fond avec une légère transparence
+                    borderColor: 'rgba(255, 99, 132, 1)',  // Couleur de la bordure
                     borderWidth: 2,
-                    pointBackgroundColor: 'rgba(200, 170, 110, 1)'
+                    pointBackgroundColor: 'rgba(255, 99, 132, 1)', // Couleur des points du radar
+                    pointBorderColor: 'rgba(255, 99, 132, 1)',
+                    pointHoverBackgroundColor: '#fff',
+                    pointHoverBorderColor: 'rgba(255, 99, 132, 1)'
                 }]
             },
             options: {
                 scales: {
                     r: {
-                        beginAtZero: true,
-                        max: 10,
+                        beginAtZero: true,  // Commencer le radar à zéro
+                        max: 10,  // Limite de l'axe
                         ticks: {
-                            display: false
+                            display: false // Cacher les ticks pour un rendu plus propre
                         },
                         grid: {
-                            color: 'rgba(200, 170, 110, 0.1)'
+                            color: 'rgba(200, 170, 110, 0.1)' // Couleur de la grille
                         },
                         pointLabels: {
-                            color: '#F0E6D2'
+                            color: '#F0E6D2' // Couleur des labels (noms des statistiques)
                         }
                     }
                 },
                 plugins: {
                     legend: {
-                        display: false
+                        display: false // Masquer la légende
+                    }
+                },
+                elements: {
+                    line: {
+                        tension: 0.3 // Courbe de la ligne
                     }
                 }
             }
         });
     }
+    
 
     function displayChampions(champions) {
         championsList.innerHTML = champions.map(champion => `
@@ -81,20 +90,35 @@ document.addEventListener('DOMContentLoaded', () => {
 
     async function showChampionDetails(championId) {
         try {
-            const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/14.23.1/data/fr_FR/champion/${championId}.json`);
+            // Normaliser la clé (gérer les apostrophes et les espaces)
+            const normalizedChampionId = championId.replace(/[^a-zA-Z0-9]/g, '');  // Supprime les caractères spéciaux comme les apostrophes
+    
+            // Vérifier si la clé existe dans championsData
+            const championKey = Object.keys(championsData).find(key => key.replace(/[^a-zA-Z0-9]/g, '') === normalizedChampionId);
+    
+            if (!championKey) {
+                console.error(`Champion non trouvé dans championsData: ${championId}`);
+                return;
+            }
+    
+            const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/14.23.1/data/fr_FR/champion/${championKey}.json`);
             const data = await response.json();
-            const champion = data.data[championId];
-
+            const champion = data.data[championKey];
+    
+            const modal = document.getElementById('championModal');
+            modal.classList.add('active');
+    
+            // Mise à jour du contenu du modal
             document.getElementById('championDetails').innerHTML = `
-                <div class="champion-header" style="background-image: url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg')">
+                <div class="champion-header" style="background-image: url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championKey}_0.jpg')">
                     <h1 class="champion-title">${champion.title}</h1>
                     <h2 class="champion-subtitle">${champion.name}</h2>
                 </div>
-
+    
                 <div class="champion-info-section">
                     <p>${champion.lore}</p>
                 </div>
-
+    
                 <div class="champion-info-section">
                     <h3 class="section-title">Compétences</h3>
                     <div class="abilities">
@@ -113,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                     <div class="ability-preview"></div>
                 </div>
-
+    
                 <div class="champion-info-section">
                     <h3 class="section-title">Skins disponibles</h3>
                     <div class="skins-section">
@@ -121,7 +145,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="skin-thumbnails">
                             ${champion.skins.map(skin => `
                                 <img class="skin-thumbnail" 
-                                     src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_${skin.num}.jpg"
+                                     src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championKey}_${skin.num}.jpg"
                                      alt="${skin.name}"
                                      data-skin-id="${skin.num}">
                             `).join('')}
@@ -129,38 +153,44 @@ document.addEventListener('DOMContentLoaded', () => {
                     </div>
                 </div>
             `;
-
+    
             // Initialiser le premier skin
             const firstSkin = champion.skins[0];
-            updateSkinPreview(championId, firstSkin.num, firstSkin.name);
-
+            updateSkinPreview(championKey, firstSkin.num, firstSkin.name);
+    
             // Gestionnaire d'événements pour les miniatures de skins
             document.querySelectorAll('.skin-thumbnail').forEach(thumbnail => {
                 thumbnail.addEventListener('click', (e) => {
                     const skinId = e.target.dataset.skinId;
                     const skinName = champion.skins.find(s => s.num === parseInt(skinId)).name;
-                    updateSkinPreview(championId, skinId, skinName);
+                    updateSkinPreview(championKey, skinId, skinName);
                     
                     document.querySelectorAll('.skin-thumbnail').forEach(t => t.classList.remove('active'));
                     e.target.classList.add('active');
                 });
             });
-
+    
+            document.querySelector('.close-button').addEventListener('click', () => {
+                modal.classList.remove('active');
+            });
+    
             // Gestionnaire d'événements pour les compétences
             document.querySelectorAll('.ability').forEach(ability => {
                 ability.addEventListener('click', (e) => {
                     const abilityIndex = e.currentTarget.dataset.ability;
                     const abilityData = abilityIndex === 'passive' ? champion.passive : champion.spells[abilityIndex];
-                    updateAbilityPreview(championId, abilityIndex, abilityData);
+                    updateAbilityPreview(championKey, abilityIndex, abilityData);
                 });
             });
-
+    
             modal.style.display = 'block';
             document.body.style.overflow = 'hidden';
         } catch (error) {
             console.error('Erreur:', error);
         }
     }
+    
+    
 
     function updateSkinPreview(championId, skinId, skinName) {
         const skinPreview = document.querySelector('.skin-preview');

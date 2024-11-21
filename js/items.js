@@ -221,7 +221,8 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         let transformsHtml = '';
-        if (into && into.length > 0) {
+        if (into && into.length > 0)
+             {
             transformsHtml = `
                 <div class="transforms">
                     <div class="transforms-title">Se transforme en:</div>

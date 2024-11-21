@@ -137,7 +137,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         <div class="ability-preview">
                             <div class="ability-video">
                                 <video autoplay loop muted>
-                                    <source src="" type="video/mp4">
+                                    <source src="" type="video/webm">
                                 </video>
                             </div>
                             <div class="ability-description">

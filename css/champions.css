@@ -64,7 +64,7 @@ body {
 }
 
 .nav-link:hover {
-    color: var(--color-gold);
+    color:#C8AA6E;
 }
 
 .main-content {
@@ -76,17 +76,18 @@ body {
 .section-title {
     font-family: var(--font-beaufort);
     font-size: 2.5rem;
-    color: var(--color-gold);
+    color:#C8AA6E;
     text-align: center;
-    margin-bottom: 1rem;
+    bottom: 150px;
 }
 
 .section-title h3 {
     font-family: var(--font-beaufort);
     font-size: 2.5rem;
-    color: var(--color-gold);
+    position: relative;
+    color:#C8AA6E;
     text-align: center;
-    margin-bottom: 1rem;
+    bottom: 200px;
 }
 
 .section-description {
@@ -121,7 +122,7 @@ body {
 .search-button {
     background: none;
     border: none;
-    color: var(--color-gold);
+    color:#C8AA6E;
     cursor: pointer;
 }
 
@@ -199,7 +200,7 @@ body {
     right: 2rem;
     background: rgba(0, 0, 0, 0.5);
     border: none;
-    color: var(--color-gold);
+    color:#C8AA6E;
     width: 48px;
     height: 48px;
     border-radius: 50%;
@@ -212,7 +213,7 @@ body {
 }
 
 .close-button:hover {
-    background-color: var(--color-gold);
+    background-color:#C8AA6E;
     color: var(--color-background);
     transform: rotate(90deg);
 }
@@ -225,6 +226,7 @@ body {
     display: flex;
     align-items: flex-end;
     padding: 4rem;
+    
 }
 
 .champion-header::before {
@@ -236,10 +238,13 @@ body {
     bottom: 0;
     background: linear-gradient(
         to bottom,
-        transparent 20%,
+        transparent 8%,
         #010A13 100%
     );
+
+    
 }
+
 
 .champion-header-content {
     position: relative;
@@ -247,6 +252,7 @@ body {
     width: 1200px;
     margin: 0 auto;
     width: 100%;
+    top: 155px;
     
 }
 
@@ -254,44 +260,60 @@ body {
     color: #C8AA6E;
     font-size: 32px;
     text-transform: uppercase;
-    margin-bottom: 45rem;
-    margin-left: 5rem;
     font-family: "Beaufort for LOL Bold", serif;
     font-style: italic;
+    position:relative;
+    right: 1rem;
+    top: -35rem;
 }
 
 .champion-name {
     font-size: 72px;
-    color: var(--color-text);
+    bottom: 0;
+    right: 15px;
+    color: #ffffff;
+    font-family: "Beaufort for LOL Bold", sans-serif;
+    font-family: "Beaufort for LOL Bold";
     font-family: var(--font-beaufort);
     text-transform: uppercase;
-    margin-bottom: 34rem;
+    position:relative;
+    font-style: italic;
+    top: -42.5rem;
     line-height: 1;
 }
 
 .champion-info-section {
     max-width: 1200px;
     margin: 0 auto;
-    padding: 4rem 2rem;
+    padding: 0.4rem 2rem;
     font-family: "Beaufort for LOL Bold", serif;
+    width: 100%;
+    border-bottom: 1rem solid rgb(200, 170, 110);
+    border-bottom-width: 1px;
+    border-bottom-style: solid;
+    border-bottom-color: rgb(200, 170, 110);
+    
     
 }
 
 .champion-info-section p {
     max-width: 1200px;
-    margin: 0 auto;
     font-size: 19px;
     padding: 1rem 2rem;
     font-family: "Beaufort for LOL Bold", serif;
     margin-left: 5rem;
-    font-style: italic;
+    position: absolute;
+    top: 45%;
+    left: -65px;
+
+
 
 }
 
 .section-title {
     font-family: "Beaufort for LOL Bold", serif;
     font-size: 36px;
-    color: var(--color-gold);
+    color:#C8AA6E;
     margin-bottom: 2rem;
     text-transform: uppercase;
     font-style: italic;
@@ -307,9 +329,11 @@ body {
 
 .abilities {
     display: flex;
-    margin-left: -180px;
+    position: relative;
+    left: -150px;
     flex-direction: column;
     gap: 1rem;
+    top: 150px;
     width: 80px;
 }
 
@@ -326,7 +350,7 @@ body {
 
 .ability:hover, 
 .ability.active {
-    border-color: var(--color-gold);
+    border-color:#C8AA6E;
     transform: translateY(-2px);
 }
 
@@ -351,20 +375,20 @@ body {
 .ability-preview {
     display: grid;
     aspect-ratio: 4/3;
-    grid-template-columns: 1fr 1fr;
-    margin-top: -500px;
+    top: -200px;
     gap: 3rem;
-    border-radius: 15%;
+    grid-template-columns: 1fr 1fr;
+    gap: 3rem;
 }
 
 .ability-preview video {
     display: grid;
-    aspect-ratio: 1/1;
+    aspect-ratio: 4/3;
     border-radius: 25px;
     grid-template-columns: 1fr 1fr;
-    margin-top: 400px;
     gap: 3rem;
-    
+    position: relative ;
+    right: 80px;
 }
 
 .ability-video {
@@ -397,14 +421,13 @@ body {
 .ability-description h4 {
     font-size: 2.2rem;
     top: 35%;
-    margin-left: 18px;
     position: relative;
-    margin-top: 15px;
-    font-family: "Beaufort for LOL Bold", serif; /* Réduit la taille du titre pour plus de compacité */
-    margin-bottom: 0.5rem; /* Réduit l'espacement sous le titre */
+    top: 10px;
+    right: 65px;
+    font-family: "Beaufort for LOL Bold", serif; /* Réduit la taille du titre pour plus de compacité *//* Réduit l'espacement sous le titre */
     text-transform: uppercase;
     font-style: italic;
-    color: var(--color-gold);
+    color:#C8AA6E;
 }
 
 .ability-description p {
@@ -419,11 +442,12 @@ body {
     padding: 0 10px; /* Ajoute un léger padding horizontal pour plus d'équilibre */
     max-width: 100%; /* Assure que le texte s'étire horizontalement dans son conteneur */
     position: relative;
-    top: 35%;
+    top: 2%;
+    left: -76px;
 }
 
 .ability-name {
-    color: var(--color-gold);
+    color:#C8AA6E;
     font-family: var(--font-beaufort);
     font-size: 24px;
     margin-bottom: 1rem;
@@ -471,7 +495,7 @@ body {
 
 
 .skin-thumbnail:hover, .skin-thumbnail.active {
-    border-color: var(--color-gold);
+    border-color:#C8AA6E;
 }
 
 .stats-chart {
@@ -512,7 +536,7 @@ body {
 }
 
 .footer-link:hover {
-    color: var(--color-gold);
+    color:#C8AA6E;
 }
 
 .social-links {
@@ -526,7 +550,7 @@ body {
 }
 
 .social-link:hover {
-    color: var(--color-gold);
+    color:#C8AA6E;
 }
 
 .footer-copyright {
@@ -574,7 +598,8 @@ body {
 
     .champion-info-section {
         padding: 2rem 1rem;
-        margin-top: 15rem;
+        position: relative;
+        top: 150px;
     }
 
     .section-title {
@@ -604,7 +629,7 @@ body {
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--color-gold);
+    background: color:#C8AA6E;
 }
 
 .champion-type-tags {
@@ -615,8 +640,8 @@ body {
 
 .champion-type-tag {
     background: rgba(200, 170, 110, 0.2);
-    border: 1px solid var(--color-gold);
-    color: var(--color-gold);
+    border: 1px solid color:#C8AA6E;
+    color:#C8AA6E;
     padding: 0.25rem 0.75rem;
     border-radius: 4px;
     font-size: 14px;

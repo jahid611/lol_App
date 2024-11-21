@@ -4,47 +4,74 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>LoL Explorer - Accueil</title>
-    <link rel="stylesheet" href="/css/style.css">
-    <link rel="icon" href="/public/images/favicon.ico" type="image/x-icon">
+    <link rel="stylesheet" href="/css/styles.css">
 </head>
 <body>
-    <div class="background-overlay" aria-hidden="true"></div>
+    <div class="background-overlay" aria-hidden="true">
+        <video autoplay loop muted playsinline>
+            <source src="/images/BGionia.mp4" type="video/mp4">
+            Votre navigateur ne supporte pas la balise vidéo.
+        </video>
+    </div>
     <header>
         <nav>
-            <div class="logo">LoL Explorer</div>
+            <a href="#" class="logo">
+                <img src="/public/images/logo.png" alt="LoL Explorer" class="logo-image">
+            </a>
             <ul>
-                <li><a href="index.html" class="active" aria-current="page">Accueil</a></li>
-                <li><a href="champions.html">Champions</a></li>
-                <li><a href="items.html">Items</a></li>
+                <li><a href="#" class="active">Accueil</a></li>
+                <li><a href="/champions.html">Champions</a></li>
+                <li><a href="/items.html">Items</a></li>
             </ul>
         </nav>
     </header>
 
     <main>
-        <div class="search-container">
-            <h1>Bienvenue sur LoL Explorer</h1>
-            <div class="search-box">
-                <input type="text" id="searchInput" placeholder="Chargement des données..." disabled aria-describedby="searchDescription">
+        <div class="champion-select">
+            <div class="champion-info">
+                <h1>CHOISISSEZ VOTRE</h1>
+                <h2>CHAMPION</h2>
+                <p>Que vous souhaitiez foncer dans la mêlée, soutenir vos alliés ou trouver un entre-deux, vous trouverez forcément votre bonheur dans la Faille.</p>
+                <div class="buttons">
+                    <a href="/champions.html" class="btn btn-primary">DÉCOUVRIR PLUS DE CHAMPIONS</a>
+                </div>
+                <div class="champion-types">
+                    <div class="champion-type" data-type="assassins">
+                        <img src="/images/assassinIcon.png" alt="Assassins">
+                        <span>ASSASSINS</span>
+                    </div>
+                    <div class="champion-type" data-type="combattants">
+                        <img src="/images/combattantIcon.png" alt="Combattants">
+                        <span>COMBATTANTS</span>
+                    </div>
+                    <div class="champion-type" data-type="mages">
+                        <img src="/images/magesIcon.png" alt="Mages">
+                        <span>MAGES</span>
+                    </div>
+                    <div class="champion-type" data-type="tireurs">
+                        <img src="/images/tireursIcon.png" alt="Tireurs">
+                        <span>TIREURS</span>
+                    </div>
+                    <div class="champion-type" data-type="supports">
+                        <img src="/images/supportIcon.png" alt="Supports">
+                        <span>SUPPORTS</span>
+                    </div>
+                    <div class="champion-type" data-type="tanks">
+                        <img src="/images/tanksIcon.png" alt="Tanks">
+                        <span>TANKS</span>
+                    </div>
+                </div>
             </div>
-            <div class="filter-options">
-                <label class="checkbox-container">
-                    <input type="checkbox" id="championFilter" checked>
-                    <span class="checkmark"></span>
-                    Champions
-                </label>
-                <label class="checkbox-container">
-                    <input type="checkbox" id="itemFilter" checked>
-                    <span class="checkmark"></span>
-                    Items
-                </label>
+            <div class="champion-image">
+                <img src="https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/befd42ad6d2564159a441d08cfc3bf511532eb74-1628x1628.png?auto=format&fit=fill&q=80&w=736" alt="Champion" id="championImage">
             </div>
-            <div id="searchResults" aria-live="polite"></div>
         </div>
     </main>
 
     <footer>
         <p>&copy; 2024 LoL Explorer - Développé avec l'API Riot Games</p>
     </footer>
+
     <script src="/js/config.js"></script>
     <script src="/js/script.js"></script>
 </body>

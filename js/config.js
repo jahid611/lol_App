@@ -1,5 +1,5 @@
 const config = {
-    ddragonVersion: '14.22.1', // Version de DataDragon
+    ddragonVersion: '14.23.1', // Version de DataDragon
     ddragonLang: 'fr_FR',      // Langue pour les données
     ddragonBaseUrl: 'https://ddragon.leagueoflegends.com/cdn' // URL de base
 };

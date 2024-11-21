@@ -3,78 +3,49 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LoL Explorer - Champions</title>
-    <link rel="stylesheet" href="css/style.css">
+    <title>LoL Champions</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="css/champions.css">
-    <link rel="icon" href="favicon.ico" type="image/x-icon">
 </head>
 <body>
     <div class="background-overlay"></div>
-    <header>
-        <nav>
-            <div class="logo">LoL Explorer</div>
-            <ul>
-                <li><a href="index.html">Recherche Joueur</a></li>
-                <li><a href="champions.html" class="active">Champions</a></li>
-                <li><a href="items.html">Items</a></li>
-            </ul>
-        </nav>
-    </header>
-
+    
     <main>
         <div class="champions-container">
-            <h1>Champions de League of Legends</h1>
             <div class="search-controls">
-                <input 
-                    type="text" 
-                    id="championSearch" 
-                    placeholder="Rechercher un champion..."
-                    class="search-input"
-                >
-                <select id="roleFilter" class="filter-select">
-                    <option value="">Tous les rôles</option>
-                    <option value="Fighter">Combattant</option>
-                    <option value="Tank">Tank</option>
-                    <option value="Mage">Mage</option>
-                    <option value="Assassin">Assassin</option>
-                    <option value="Marksman">Tireur</option>
-                    <option value="Support">Support</option>
-                </select>
-                <select id="difficultyFilter" class="filter-select">
-                    <option value="">Toutes les difficultés</option>
-                    <option value="1">Facile</option>
-                    <option value="2">Moyen</option>
-                    <option value="3">Difficile</option>
-                </select>
+                <div class="search-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="championSearch" placeholder="Rechercher un champion..." class="search-input">
+                </div>
+                <div class="filter-wrapper">
+                    <i class="fas fa-filter"></i>
+                    <select id="roleFilter" class="filter-select">
+                        <option value="">Tous les rôles</option>
+                        <option value="Fighter">Combattant</option>
+                        <option value="Tank">Tank</option>
+                        <option value="Mage">Mage</option>
+                        <option value="Assassin">Assassin</option>
+                        <option value="Marksman">Tireur</option>
+                        <option value="Support">Support</option>
+                    </select>
+                </div>
             </div>
-            <div id="championsList" class="champions-grid">
-                <!-- Champions will be loaded here -->
-            </div>
+            <div id="championsList" class="champions-grid"></div>
         </div>
     </main>
 
-    <div id="championModal" class="modal hidden">
+    <div id="championModal" class="champion-modal">
         <div class="modal-content">
-            <button class="close-button">&times;</button>
-            <div id="championDetails">
-                <!-- Champion details will be loaded here -->
+            <button class="close-button"><i class="fas fa-times"></i></button>
+            <div id="championDetails" class="champion-details">
+                <!-- Le contenu sera injecté dynamiquement -->
             </div>
         </div>
     </div>
 
-    <div id="spellVideoModal" class="modal hidden">
-        <div class="modal-content">
-            <button class="close-button">&times;</button>
-            <div id="spellVideoContainer"></div>
-        </div>
-    </div>
-
-    <footer>
-        <p>&copy; 2024 LoL Explorer - Développé avec l'API Riot Games</p>
-    </footer>
-
-    <script src="js/config.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="js/champ-data.js"></script>
+    <script src="js/config.js"></script>
     <script src="js/champions.js"></script>
 </body>
 </html>

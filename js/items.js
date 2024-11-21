@@ -20,41 +20,65 @@ document.addEventListener('DOMContentLoaded', () => {
         'HealthRegen': 'Régénération de vie',
         'ManaRegen': 'Régénération de mana',
         'NonbootsMovement': 'Mouvement',
-        'Boots': 'Bottes',
         'AbilityPower': 'Puissance',
         'CooldownReduction': 'Réduction de temps de recharge',
-        'OnHit': 'Effets à l\'impact',
         'Health': 'Santé',
         'Mana': 'Mana',
         'LifeSteal': 'Vol de vie',
-        'SpellVamp': 'Omnivampirisme'
+        'SpellVamp': 'Omnivampirisme',
+        'ArmorPenetration': 'Pénétration d\'armure',
+        'MagicPenetration': 'Pénétration magique',
+        'Range': 'Portée',
+        'Tenacity': 'Ténacité'
     };
-
+      
     const statIcons = {
-        FlatPhysicalDamageMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsattackdamageicon.png',
-        FlatMagicDamageMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsabilitypowericon.png',
-        PercentAttackSpeedMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsattackspeedicon.png',
-        FlatHPPoolMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodshealthscalingicon.png',
-        FlatSpellBlockMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsmagicresicon.png',
-        FlatArmorMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/statmods/statmodsarmoricon.png',
-        PercentMovementSpeedMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/styles/resolve/veteranaftershock/veteranaftershock.png',
-        FlatCritChanceMod: 'https://raw.communitydragon.org/latest/plugins/rcp-be-lol-game-data/global/default/v1/perk-images/styles/precision/lethaltempotemporary/lethaltempotemporary.png'
+        FlatPhysicalDamageMod: '/images/STATS/AD.png',
+        FlatMagicDamageMod: '/images/STATS/AP.png',
+        PercentAttackSpeedMod: '/images/STATS/AS.png',
+        FlatHPPoolMod: '/images/STATS/HP.png',
+        FlatMPPoolMod: '/images/STATS/MANA.png',
+        FlatSpellBlockMod: '/images/STATS/RM.png',
+        FlatArmorMod: '/images/STATS/ARMOR.png',
+        PercentMovementSpeedMod: '/images/STATS/MS.png',
+        FlatCritChanceMod: '/images/STATS/CRITCHC.png',
+        HealthRegenMod: '/images/STATS/HPREGEN.png',
+        ManaRegenMod: '/images/STATS/MANARGEN.png',
+        LifeStealMod: '/images/STATS/LIFESTEAL.png',
+        SpellVampMod: '/images/STATS/OMNIVAMP.png',
+        PercentLifeStealMod: '/images/STATS/LIFESTEAL.png',
+        CooldownReductionMod: '/images/STATS/CDR.png',
+        ArmorPenMod: '/images/STATS/ARMORPEN.png',
+        MagicPenMod: '/images/STATS/MAGPEN.png',
+        RangeMod: '/images/STATS/RANGE.png',
+        TenacityMod: '/images/STATS/TENACITY.png'
     };
-
+      
     const statNames = {
         FlatPhysicalDamageMod: 'Dégâts d\'attaque',
         FlatMagicDamageMod: 'Puissance',
         PercentAttackSpeedMod: 'Vitesse d\'attaque',
         FlatHPPoolMod: 'Santé',
+        FlatMPPoolMod: 'Mana',
         FlatSpellBlockMod: 'Résistance magique',
         FlatArmorMod: 'Armure',
         PercentMovementSpeedMod: 'Vitesse de déplacement',
         FlatCritChanceMod: 'Chance de coup critique',
+        HealthRegenMod: 'Régénération de vie',
+        ManaRegenMod: 'Régénération de mana',
+        LifeStealMod: 'Vol de vie',
+        PercentLifeStealMod: 'Vol de vie',
+        SpellVampMod: 'Omnivampirisme',
+        CooldownReductionMod: 'Réduction de temps de recharge',
+        ArmorPenMod: 'Pénétration d\'armure',
+        MagicPenMod: 'Pénétration magique',
+        RangeMod: 'Portée',
+        TenacityMod: 'Ténacité'
     };
 
     async function fetchItems() {
         try {
-            const response = await fetch('https://ddragon.leagueoflegends.com/cdn/14.22.1/data/fr_FR/item.json');
+            const response = await fetch('https://ddragon.leagueoflegends.com/cdn/14.23.1/data/fr_FR/item.json');
             if (!response.ok) throw new Error(`Erreur HTTP : ${response.status}`);
             const data = await response.json();
 
@@ -114,7 +138,14 @@ document.addEventListener('DOMContentLoaded', () => {
         const activeButton = document.querySelector(`.category-button[data-category="${category}"]`);
         if (activeButton) activeButton.classList.add('active');
 
-        const filteredItems = allItems.filter(item => item.tags && item.tags.includes(category));
+        let filteredItems;
+        if (category === 'AttackDamage') {
+            filteredItems = allItems.filter(item => item.stats && item.stats.FlatPhysicalDamageMod);
+        } else if (category === 'AbilityPower') {
+            filteredItems = allItems.filter(item => item.stats && item.stats.FlatMagicDamageMod);
+        } else {
+            filteredItems = allItems.filter(item => item.tags && item.tags.includes(category));
+        }
         displayItems(filteredItems);
     }
 
@@ -132,7 +163,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const card = document.createElement('div');
         card.classList.add('item-card');
         card.innerHTML = `
-            <img src="https://ddragon.leagueoflegends.com/cdn/14.22.1/img/item/${item.image.full}" alt="${item.name}" title="${item.name}" loading="lazy">
+            <img src="https://ddragon.leagueoflegends.com/cdn/14.23.1/img/item/${item.image.full}" alt="${item.name}" title="${item.name}" loading="lazy">
         `;
 
         card.addEventListener('mouseenter', (e) => {
@@ -145,14 +176,13 @@ document.addEventListener('DOMContentLoaded', () => {
                 if (!isHovering) {
                     hideModal();
                 }
-            }, 100);
+            }, 850);
         });
 
         return card;
     }
 
     function showItemDetails(item, element, e) {
-        if (activeItem === item) return;
         activeItem = item;
         updateModalContent(item);
         showModal(element);
@@ -180,7 +210,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="recipe-title">Recette:</div>
                     <div class="recipe-items">
                         ${from.map(componentId => `
-                            <img src="https://ddragon.leagueoflegends.com/cdn/14.22.1/img/item/${allItems.find(i => i.id === componentId)?.image.full}" 
+                            <img src="https://ddragon.leagueoflegends.com/cdn/14.23.1/img/item/${allItems.find(i => i.id === componentId)?.image.full}" 
                                  alt="${allItems.find(i => i.id === componentId)?.name}"
                                  title="${allItems.find(i => i.id === componentId)?.name}">
                         `).join('')}
@@ -197,7 +227,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     <div class="transforms-title">Se transforme en:</div>
                     <div class="transform-items">
                         ${into.map(transformId => `
-                            <img src="https://ddragon.leagueoflegends.com/cdn/14.22.1/img/item/${allItems.find(i => i.id === transformId)?.image.full}"
+                            <img src="https://ddragon.leagueoflegends.com/cdn/14.23.1/img/item/${allItems.find(i => i.id === transformId)?.image.full}"
                                  alt="${allItems.find(i => i.id === transformId)?.name}"
                                  title="${allItems.find(i => i.id === transformId)?.name}">
                         `).join('')}
@@ -208,7 +238,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         itemDetails.innerHTML = `
             <h2>${name}</h2>
-            <img src="https://ddragon.leagueoflegends.com/cdn/14.22.1/img/item/${item.image.full}" 
+            <img src="https://ddragon.leagueoflegends.com/cdn/14.23.1/img/item/${item.image.full}" 
                  alt="${name}" 
                  class="main-image">
             ${statsHtml}
@@ -230,6 +260,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.addEventListener('mousemove', updateMousePosition);
 
     function showModal(element) {
+        const modalContent = modal.querySelector('.modal-content');
+        modalContent.style.transform = 'translateY(0)';
         modal.classList.add('visible');
         positionModal();
     }
@@ -255,8 +287,12 @@ document.addEventListener('DOMContentLoaded', () => {
     }
 
     function hideModal() {
-        modal.classList.remove('visible');
-        activeItem = null;
+        if (!isHovering) {
+            const modalContent = modal.querySelector('.modal-content');
+            modalContent.style.transform = 'translateY(100vh)';
+            modal.classList.remove('visible');
+            activeItem = null;
+        }
     }
 
     function formatStat(stat, value) {
@@ -300,15 +336,19 @@ document.addEventListener('DOMContentLoaded', () => {
         displayItems(filteredItems);
     });
 
-    function handleOutsideClick(event) {
-        if (modal.classList.contains('visible')) {
-            if (!modal.querySelector('.modal-content').contains(event.target) && !event.target.closest('.item-card')) {
+    // Add event listeners to handle modal visibility
+    modal.querySelector('.modal-content').addEventListener('mouseenter', () => {
+        isHovering = true;
+    });
+
+    modal.querySelector('.modal-content').addEventListener('mouseleave', () => {
+        isHovering = false;
+        setTimeout(() => {
+            if (!isHovering) {
                 hideModal();
             }
-        }
-    }
-
-    document.addEventListener('click', handleOutsideClick);
+        }, 100);
+    });
 
     fetchItems();
 });

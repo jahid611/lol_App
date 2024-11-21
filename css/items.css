@@ -158,6 +158,7 @@ input, select {
 .modal-content {
     position: fixed;
     background-color: rgba(0, 9, 19, 0.95);
+    transition: transform 0.3s ease-out;
     border: 1px solid #785a28;
     color: #fff;
     padding: 12px;

@@ -2,206 +2,241 @@ document.addEventListener('DOMContentLoaded', () => {
     const championsList = document.getElementById('championsList');
     const championSearch = document.getElementById('championSearch');
     const roleFilter = document.getElementById('roleFilter');
-    const difficultyFilter = document.getElementById('difficultyFilter');
     const modal = document.getElementById('championModal');
-    const spellVideoModal = document.getElementById('spellVideoModal');
-    const closeButtons = document.querySelectorAll('.close-button');
     let allChampions = [];
 
     async function fetchChampions() {
         try {
-            const response = await fetch(getDdragonUrl(`data/${config.ddragonLang}/champion.json`));
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
+            const response = await fetch('https://ddragon.leagueoflegends.com/cdn/14.23.1/data/fr_FR/champion.json');
             const data = await response.json();
             allChampions = Object.values(data.data);
             displayChampions(allChampions);
         } catch (error) {
-            console.error('Erreur lors de la récupération des champions:', error);
-            championsList.innerHTML = '<p class="error">Erreur lors du chargement des champions. Veuillez réessayer plus tard.</p>';
+            console.error('Erreur:', error);
         }
     }
 
-    function displayChampions(champions) {
-        if (!champions || champions.length === 0) {
-            championsList.innerHTML = '<p>Aucun champion trouvé.</p>';
-            return;
-        }
+    function createStatsChart(canvas, stats) {
+        return new Chart(canvas, {
+            type: 'radar',
+            data: {
+                labels: ['Attaque', 'Défense', 'Magie', 'Difficulté'],
+                datasets: [{
+                    data: [stats.attack, stats.defense, stats.magic, stats.difficulty],
+                    backgroundColor: 'rgba(200, 170, 110, 0.2)',
+                    borderColor: 'rgba(200, 170, 110, 1)',
+                    borderWidth: 2,
+                    pointBackgroundColor: 'rgba(200, 170, 110, 1)'
+                }]
+            },
+            options: {
+                scales: {
+                    r: {
+                        beginAtZero: true,
+                        max: 10,
+                        ticks: {
+                            display: false
+                        },
+                        grid: {
+                            color: 'rgba(200, 170, 110, 0.1)'
+                        },
+                        pointLabels: {
+                            color: '#F0E6D2'
+                        }
+                    }
+                },
+                plugins: {
+                    legend: {
+                        display: false
+                    }
+                }
+            }
+        });
+    }
 
+    function displayChampions(champions) {
         championsList.innerHTML = champions.map(champion => `
             <div class="champion-card" data-champion-id="${champion.id}">
-                <img 
-                    src="${getDdragonUrl(`img/champion/${champion.image.full}`)}" 
-                    alt="${champion.name}"
-                    onerror="this.onerror=null; this.src='placeholder.png';"
-                >
+                <img src="https://ddragon.leagueoflegends.com/cdn/img/champion/loading/${champion.id}_0.jpg" 
+                     alt="${champion.name}">
                 <div class="champion-info">
-                    <p class="champion-name">${champion.name}</p>
-                    <p class="champion-roles">${champion.tags.join(', ')}</p>
+                    <h3>${champion.name}</h3>
+                    <p>${champion.title}</p>
                 </div>
                 <div class="champion-stats">
-                    <p>Attaque: ${champion.info.attack}</p>
-                    <p>Défense: ${champion.info.defense}</p>
-                    <p>Magie: ${champion.info.magic}</p>
-                    <p>Difficulté: ${champion.info.difficulty}</p>
+                    <canvas class="stats-chart"></canvas>
                 </div>
             </div>
         `).join('');
 
-        championsList.querySelectorAll('.champion-card').forEach(card => {
-            card.addEventListener('click', () => showChampionDetails(card.dataset.championId));
+        document.querySelectorAll('.champion-card').forEach(card => {
+            const canvas = card.querySelector('.stats-chart');
+            const championId = card.dataset.championId;
+            const champion = champions.find(c => c.id === championId);
+            createStatsChart(canvas, champion.info);
+
+            card.addEventListener('click', () => showChampionDetails(championId));
         });
     }
 
     async function showChampionDetails(championId) {
         try {
-            const response = await fetch(getDdragonUrl(`data/${config.ddragonLang}/champion/${championId}.json`));
-            
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            
+            const response = await fetch(`https://ddragon.leagueoflegends.com/cdn/14.23.1/data/fr_FR/champion/${championId}.json`);
             const data = await response.json();
             const champion = data.data[championId];
-    
-            const modalContent = document.getElementById('championDetails');
-            modalContent.innerHTML = `
-                <div class="champion-details">
-                    <div class="champion-header">
-                        <img src="${getDdragonUrl(`img/champion/${champion.image.full}`)}" 
-                             alt="${champion.name}" 
-                             class="champion-portrait">
-                        <div>
-                            <h2>${champion.name}</h2>
-                            <p class="champion-title">${champion.title}</p>
-                        </div>
-                    </div>
-                    <p class="champion-lore">${champion.lore}</p>
-                    <div class="champion-abilities">
-                        <div class="ability passive" data-spell-id="passive">
-                            <img src="${getDdragonUrl(`img/passive/${champion.passive.image.full}`)}" 
-                                 alt="${champion.passive.name}"
-                                 title="${champion.passive.name}">
+
+            document.getElementById('championDetails').innerHTML = `
+                <div class="champion-header" style="background-image: url('https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_0.jpg')">
+                    <h1 class="champion-title">${champion.title}</h1>
+                    <h2 class="champion-subtitle">${champion.name}</h2>
+                </div>
+
+                <div class="champion-info-section">
+                    <p>${champion.lore}</p>
+                </div>
+
+                <div class="champion-info-section">
+                    <h3 class="section-title">Compétences</h3>
+                    <div class="abilities">
+                        <div class="ability" data-ability="passive">
+                            <img src="https://ddragon.leagueoflegends.com/cdn/14.23.1/img/passive/${champion.passive.image.full}" 
+                                 alt="${champion.passive.name}">
                             <p>Passive</p>
                         </div>
                         ${champion.spells.map((spell, index) => `
-                            <div class="ability" data-spell-id="${['Q', 'W', 'E', 'R'][index]}">
-                                <img src="${getDdragonUrl(`img/spell/${spell.image.full}`)}" 
-                                     alt="${spell.name}"
-                                     title="${spell.name}">
-                                <p>${['Q', 'W', 'E', 'R'][index]}</p>
+                            <div class="ability" data-ability="${index}">
+                                <img src="https://ddragon.leagueoflegends.com/cdn/14.23.1/img/spell/${spell.image.full}"
+                                     alt="${spell.name}">
+                                <p>${spell.name}</p>
                             </div>
                         `).join('')}
                     </div>
-                    <h3>Skins</h3>
-                    <div class="champion-skins">
-                        ${champion.skins.map(skin => `
-                            <div class="skin-preview">
-                                <img src="${config.ddragonBaseUrl}/img/champion/splash/${champion.id}_${skin.num}.jpg" 
-                                     alt="${skin.name === 'default' ? champion.name : skin.name}" 
-                                     loading="lazy">
-                                <p>${skin.name === 'default' ? champion.name : skin.name}</p>
-                            </div>
-                        `).join('')}
+                    <div class="ability-preview"></div>
+                </div>
+
+                <div class="champion-info-section">
+                    <h3 class="section-title">Skins disponibles</h3>
+                    <div class="skins-section">
+                        <div class="skin-preview"></div>
+                        <div class="skin-thumbnails">
+                            ${champion.skins.map(skin => `
+                                <img class="skin-thumbnail" 
+                                     src="https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_${skin.num}.jpg"
+                                     alt="${skin.name}"
+                                     data-skin-id="${skin.num}">
+                            `).join('')}
+                        </div>
                     </div>
                 </div>
             `;
-    
-            modal.classList.remove('hidden');
-    
-            modalContent.querySelectorAll('.ability').forEach(ability => {
-                ability.addEventListener('click', () => showSpellVideo(champion.name, ability.dataset.spellId));
+
+            // Initialiser le premier skin
+            const firstSkin = champion.skins[0];
+            updateSkinPreview(championId, firstSkin.num, firstSkin.name);
+
+            // Gestionnaire d'événements pour les miniatures de skins
+            document.querySelectorAll('.skin-thumbnail').forEach(thumbnail => {
+                thumbnail.addEventListener('click', (e) => {
+                    const skinId = e.target.dataset.skinId;
+                    const skinName = champion.skins.find(s => s.num === parseInt(skinId)).name;
+                    updateSkinPreview(championId, skinId, skinName);
+                    
+                    document.querySelectorAll('.skin-thumbnail').forEach(t => t.classList.remove('active'));
+                    e.target.classList.add('active');
+                });
             });
+
+            // Gestionnaire d'événements pour les compétences
+            document.querySelectorAll('.ability').forEach(ability => {
+                ability.addEventListener('click', (e) => {
+                    const abilityIndex = e.currentTarget.dataset.ability;
+                    const abilityData = abilityIndex === 'passive' ? champion.passive : champion.spells[abilityIndex];
+                    updateAbilityPreview(championId, abilityIndex, abilityData);
+                });
+            });
+
+            modal.style.display = 'block';
+            document.body.style.overflow = 'hidden';
         } catch (error) {
-            console.error('Error fetching champion details:', error);
-            alert('Error loading champion details. Please try again later.');
+            console.error('Erreur:', error);
         }
     }
 
-    async function showSpellVideo(championName, spellId) {
-        const championId = championsData[championName];
-    
-        if (!championId) {
-            console.error(`Champion ID not found for: ${championName}`);
-            alert(`Champion "${championName}" not recognized.`);
-            return;
-        }
-    
-        let spellSuffix;
-        if (spellId === 'passive') {
-            spellSuffix = 'P1';
-        } else {
-            spellSuffix = {
-                'Q': 'Q1',
-                'W': 'W1',
-                'E': 'E1',
-                'R': 'R1'
-            }[spellId] || 'Q1'; // Default to Q1 if somehow an invalid spellId is passed
-        }
-    
-        const videoUrl = `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/${championId}/ability_${championId}_${spellSuffix}.mp4`;
-    
-        const spellVideoContainer = document.getElementById('spellVideoContainer');
-        spellVideoContainer.innerHTML = `
-            <video controls autoplay loop>
-                <source src="${videoUrl}" type="video/mp4">
-                Your browser does not support video playback.
-            </video>
-        `;
-    
-        const video = spellVideoContainer.querySelector('video');
+    function updateSkinPreview(championId, skinId, skinName) {
+        const skinPreview = document.querySelector('.skin-preview');
+        skinPreview.style.backgroundImage = `url(https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championId}_${skinId}.jpg)`;
         
-        video.onerror = function() {
-            console.error(`Failed to load video for ${championName} ${spellId}`);
-            spellVideoContainer.innerHTML = `
-                <p>Sorry, the video for this ability is not available.</p>
-                <p>Attempted URL: ${videoUrl}</p>
-            `;
-        };
-    
-        // Show the video modal
-        const spellVideoModal = document.getElementById('spellVideoModal');
-        spellVideoModal.classList.remove('hidden');
-    }
-    
-
-    function filterChampions() {
-        const searchTerm = championSearch.value.toLowerCase();
-        const selectedRole = roleFilter.value;
-        const selectedDifficulty = difficultyFilter.value;
-
-        const filteredChampions = allChampions.filter(champion => {
-            const nameMatch = champion.name.toLowerCase().includes(searchTerm);
-            const roleMatch = !selectedRole || champion.tags.includes(selectedRole);
-            const difficultyMatch = !selectedDifficulty || 
-                (selectedDifficulty === '1' && champion.info.difficulty <= 3) ||
-                (selectedDifficulty === '2' && champion.info.difficulty > 3 && champion.info.difficulty <= 7) ||
-                (selectedDifficulty === '3' && champion.info.difficulty > 7);
-            
-            return nameMatch && roleMatch && difficultyMatch;
-        });
-
-        displayChampions(filteredChampions);
+        const skinTitle = document.querySelector('.skin-title');
+        if (!skinTitle) {
+            const title = document.createElement('h3');
+            title.className = 'skin-title';
+            skinPreview.appendChild(title);
+        }
+        document.querySelector('.skin-title').textContent = skinName;
     }
 
-    championSearch.addEventListener('input', filterChampions);
-    roleFilter.addEventListener('change', filterChampions);
-    difficultyFilter.addEventListener('change', filterChampions);
-    closeButtons.forEach(button => {
-        button.addEventListener('click', () => {
-            modal.classList.add('hidden');
-            spellVideoModal.classList.add('hidden');
-        });
-    });
-    [modal, spellVideoModal].forEach(modalElement => {
-        modalElement.addEventListener('click', (e) => {
-            if (e.target === modalElement) {
-                modalElement.classList.add('hidden');
+    function updateAbilityPreview(championId, abilityIndex, abilityData) {
+        const previewContainer = document.querySelector('.ability-preview');
+        
+        // Récupération de l'ID du champion depuis champ-data.js
+
+        // Récupérer l'ID du champion à partir de champ-data.js
+        const champId = championsData[championId];
+    
+        // Définir l'URL en fonction de l'abilityIndex (Q, W, E, R, P)
+        let abilityKey = '';
+        if (abilityIndex === 'passive') {
+            abilityKey = 'P1';  // Passif
+        } else {
+            switch (abilityIndex) {
+                case '0': abilityKey = 'Q1'; break;
+                case '1': abilityKey = 'W1'; break;
+                case '2': abilityKey = 'E1'; break;
+                case '3': abilityKey = 'R1'; break;
+                default: abilityKey = 'Q1'; break;
             }
-        });
+        }
+    
+        // Générer l'URL vidéo avec l'ID du champion et la compétence choisie
+        const videoUrl = `https://d28xe8vt774jo5.cloudfront.net/champion-abilities/${champId}/ability_${champId}_${abilityKey}.mp4`;
+    
+        // Log de l'URL pour le débogage
+        console.log("URL générée pour la vidéo de l'abilité:", videoUrl);
+    
+        previewContainer.innerHTML = `
+            <video autoplay loop muted>
+                <source src="${videoUrl}" type="video/mp4">
+            </video>
+            <div class="ability-description">
+                <h4>${abilityData.name}</h4>
+                <p>${abilityData.description}</p>
+            </div>
+        `;
+    }
+    
+    
+    
+    
+
+    document.querySelector('.close-button').addEventListener('click', () => {
+        modal.style.display = 'none';
+        document.body.style.overflow = 'auto';
+    });
+
+    championSearch.addEventListener('input', (e) => {
+        const searchTerm = e.target.value.toLowerCase();
+        const filteredChampions = allChampions.filter(champion => 
+            champion.name.toLowerCase().includes(searchTerm)
+        );
+        displayChampions(filteredChampions);
+    });
+
+    roleFilter.addEventListener('change', (e) => {
+        const selectedRole = e.target.value;
+        const filteredChampions = selectedRole 
+            ? allChampions.filter(champion => champion.tags.includes(selectedRole))
+            : allChampions;
+        displayChampions(filteredChampions);
     });
 
     fetchChampions();

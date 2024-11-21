@@ -1,110 +1,31 @@
 document.addEventListener('DOMContentLoaded', () => {
-    const searchInput = document.getElementById('searchInput');
-    const searchResults = document.getElementById('searchResults');
-    const championFilter = document.getElementById('championFilter');
-    const itemFilter = document.getElementById('itemFilter');
-    let allData = { champions: [], items: [] };
+    const championTypes = document.querySelectorAll('.champion-type');
+    const championImage = document.getElementById('championImage');
 
-    const config = {
-        ddragonVersion: '14.22.1',
-        ddragonLang: 'fr_FR',
-        ddragonBaseUrl: 'https://ddragon.leagueoflegends.com/cdn'
+    const championImages = {
+        assassins: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/befd42ad6d2564159a441d08cfc3bf511532eb74-1628x1628.png?auto=format&fit=fill&q=80&w=736',
+        mages: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/ff6c8c57411e5c7e0551b02334fccedc78866143-1628x1628.png?auto=format&fit=fill&q=80&w=736',
+        tireurs: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/f136500bd46f823d37515a72b867425d3a0b3e54-1628x1628.png?auto=format&fit=fill&q=80&w=736',
+        tanks: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/95daf6dd2b28f03d5ba2ea1fabbabc3bc3ff6e6e-1628x1628.png?auto=format&fit=fill&q=80&w=736',
+        combattants: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news_live/70c26e49de8a2c79ac3de144772d2debd195edff-1628x1628.png?auto=format&fit=fill&q=80&w=736',
+        supports: 'https://cmsassets.rgpub.io/sanity/images/dsfx7636/news/dbdded937cd214bb2a1189697a9e4f49f8c04505-1628x1628.png?auto=format&fit=fill&q=80&w=736',
     };
 
-    function getDdragonUrl(path) {
-        return `${config.ddragonBaseUrl}/${config.ddragonVersion}/${path}`;
-    }
-
-    async function fetchData() {
-        try {
-            const [championsResponse, itemsResponse] = await Promise.all([
-                fetch(getDdragonUrl(`data/${config.ddragonLang}/champion.json`)),
-                fetch(getDdragonUrl(`data/${config.ddragonLang}/item.json`))
-            ]);
-
-            if (!championsResponse.ok || !itemsResponse.ok) {
-                throw new Error('Network response was not ok');
+    championTypes.forEach(type => {
+        type.addEventListener('click', () => {
+            const championType = type.dataset.type;
+            if (championImages[championType]) {
+                championImage.src = championImages[championType];
+                
+                // Retire la classe active de tous les types
+                championTypes.forEach(t => t.classList.remove('active'));
+                
+                // Ajoute la classe active au type cliqué
+                type.classList.add('active');
             }
-
-            const championsData = await championsResponse.json();
-            const itemsData = await itemsResponse.json();
-
-            allData.champions = Object.values(championsData.data);
-            
-            allData.items = Object.values(itemsData.data).filter(item => {
-                return item.maps && item.maps['11'] && !item.tags.includes('Jungle') && !item.tags.includes('Lane') && !item.requiredChampion;
-            });
-
-            console.log('Data loaded successfully');
-            console.log(`Loaded ${allData.champions.length} champions and ${allData.items.length} items`);
-        } catch (error) {
-            console.error('Error fetching data:', error);
-            searchResults.innerHTML = '<p>Une erreur est survenue lors du chargement des données. Veuillez réessayer plus tard.</p>';
-        }
-    }
-
-    function performSearch() {
-        const searchTerm = searchInput.value.trim().toLowerCase();
-        const showChampions = championFilter.checked;
-        const showItems = itemFilter.checked;
-        
-        if (searchTerm === '') {
-            searchResults.innerHTML = '';
-            return;
-        }
-
-        let results = [];
-
-        if (showChampions) {
-            const filteredChampions = allData.champions.filter(champion => 
-                champion.name.toLowerCase().includes(searchTerm) ||
-                champion.title.toLowerCase().includes(searchTerm)
-            );
-            results = results.concat(filteredChampions.map(c => ({ ...c, type: 'champion' })));
-        }
-
-        if (showItems) {
-            const filteredItems = allData.items.filter(item => 
-                item.name.toLowerCase().includes(searchTerm) ||
-                (item.description && item.description.toLowerCase().includes(searchTerm))
-            );
-            results = results.concat(filteredItems.map(i => ({ ...i, type: 'item' })));
-        }
-
-        displayResults(results);
-    }
-
-    function displayResults(results) {
-        if (results.length === 0) {
-            searchResults.innerHTML = '<p>Aucun résultat trouvé.</p>';
-            return;
-        }
-
-        searchResults.innerHTML = results.map(result => `
-            <div class="result-item">
-                <img src="${getImageUrl(result)}" 
-                     alt="${result.name}"
-                     onerror="this.onerror=null; this.src='placeholder.png';">
-                <p>${result.name}</p>
-                <span class="result-type">${result.type === 'champion' ? 'Champion' : 'Item'}</span>
-            </div>
-        `).join('');
-    }
-
-    function getImageUrl(result) {
-        if (result.type === 'champion') {
-            return getDdragonUrl(`img/champion/${result.image.full}`);
-        } else {
-            return getDdragonUrl(`img/item/${result.image.full}`);
-        }
-    }
-
-    searchInput.addEventListener('input', performSearch);
-    championFilter.addEventListener('change', performSearch);
-    itemFilter.addEventListener('change', performSearch);
-
-    fetchData().then(() => {
-        searchInput.disabled = false;
-        searchInput.placeholder = "Rechercher des champions ou des objets...";
+        });
     });
+
+    // Définir le premier type comme actif par défaut
+    championTypes[0].classList.add('active');
 });
